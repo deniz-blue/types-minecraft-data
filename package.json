@@ -15,5 +15,8 @@
     "@types/node": "^24.3.0",
     "protodef": "^1.19.0",
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@alan404/enum": "^0.2.3"
   }
 }

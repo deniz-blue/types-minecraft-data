@@ -1,14 +1,17 @@
 import { indent, lines } from "../codegen.js";
+import { TSType } from "../ts/tstype.js";
 import type { ProtoDefinition } from "./protodef.js";
 
 export const flagsType = (names: string[]) => {
-    return lines([
-        "{",
-        indent(
-            names.map(name => `${name}?: boolean;`),
-        ),
-        "}",
-    ]);
+    const record: Record<string, TSType> = {};
+
+    for(let name of names)
+        record[name] = TSType.Union([
+            TSType.Reference("boolean"),
+            TSType.Reference("undefined"),
+        ]);
+
+    return TSType.Record(record);
 };
 
 export const protoDefBitfield = (args: ProtoDefinition.BitfieldArgs) => {
@@ -21,5 +24,5 @@ export const protoDefBitflags = (args: ProtoDefinition.BitflagsArgs) => {
 };
 
 export const protoDefMapper = (args: ProtoDefinition.MapperArgs) => {
-    return `${Object.values(args.mappings).map(x => JSON.stringify(x)).join(" | ") || "void"}`;
+    return TSType.Union(Object.values(args.mappings).map(x => TSType.Reference(JSON.stringify(x))));
 };

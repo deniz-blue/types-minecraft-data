@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@alan404/enum':
+        specifier: ^0.2.3
+        version: 0.2.3
     devDependencies:
       '@types/node':
         specifier: ^24.3.0
@@ -19,6 +23,9 @@ importers:
         version: 5.9.2
 
 packages:
+
+  '@alan404/enum@0.2.3':
+    resolution: {integrity: sha512-vLb0wVUaWqvGLoIPQauRMoylZ1psGCfv9GFNii5cJ6VyIFb0wgUp0Viw5ewpUz054YYj30FQc5NdNlTGw65PSQ==}
 
   '@types/node@24.3.0':
     resolution: {integrity: sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==}
@@ -97,6 +104,8 @@ packages:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
 snapshots:
+
+  '@alan404/enum@0.2.3': {}
 
   '@types/node@24.3.0':
     dependencies:

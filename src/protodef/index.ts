@@ -1,11 +1,11 @@
-import type { ProtoDefinition } from "./protodef.js";
-import { indent, lines } from "../codegen.js";
+import { ProtoDefinition } from "./protodef.js";
 import { protoDefBasicToType } from "./primitive.js";
 import { protoDefBitfield, protoDefBitflags, protoDefMapper } from "./flags.js";
-import type { Ctx } from "./ctx.js";
+import { Ctx } from "./ctx.js";
 import { protoDefSwitch } from "./conditional.js";
 import { protoDefArray, protoDefContainer } from "./structures.js";
-import { mcDataCustomProtoDefs } from "./mcdata.js";
+import { mcDataCustomProtoDefs, protoDefRegistryEntryHolder, protoDefRegistryEntryHolderSet } from "./mcdata.js";
+import { TSType } from "../ts/tstype.js";
 
 function resolvePath(path: string[], compareTo: string): string {
     const parts = compareTo.split("/");
@@ -27,8 +27,7 @@ function resolvePath(path: string[], compareTo: string): string {
 export const protoDefToType = (
     type: ProtoDefinition.Type,
     ctx: Ctx,
-): string => {
-    console.log(type)
+): TSType => {
     let native = protoDefBasicToType(type);
     if (native) return native;
 
@@ -37,14 +36,17 @@ export const protoDefToType = (
 
     if (typeof type == "string") {
         let newType = ctx.resolveType(type);
-        if (newType) return newType;
-        return `\`$${type}\``;
+        if (newType) return TSType.Reference(newType);
+        return TSType.Reference(`\`$${type}\``);
     }
 
     const [typeName, args] = type;
 
-    if (typeName == "count") return "unique symbol";
-    if (typeName == "option") return protoDefToType(args as ProtoDefinition.Type, ctx) + " | null | undefined";
+    if (typeName == "count") return TSType.Reference("unique symbol");
+    if (typeName == "option") return TSType.Union([
+        protoDefToType(args as ProtoDefinition.Type, ctx),
+        TSType.Reference("undefined"),
+    ]);
     if (typeName == "array") return protoDefArray(args, ctx);
     if (typeName === "switch") return protoDefSwitch(args, ctx);
     if (typeName === "container") return protoDefContainer(args, ctx);
@@ -52,6 +54,10 @@ export const protoDefToType = (
     if (typeName == "bitflags") return protoDefBitflags(args);
     if (typeName == "mapper") return protoDefMapper(args);
 
-    return `\`$$${typeName}\``;
+    // mc-proto specific
+    if (typeName == "registryEntryHolder") return protoDefRegistryEntryHolder(args, ctx);
+    if (typeName == "registryEntryHolderSet") return protoDefRegistryEntryHolderSet(args, ctx);
+
+    return TSType.Reference(`\`$$${typeName}\``);
 };
 

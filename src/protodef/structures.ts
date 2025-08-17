@@ -1,28 +1,21 @@
 import { indent, lines } from "../codegen.js";
+import { TSType } from "../ts/tstype.js";
 import type { Ctx } from "./ctx.js";
 import { protoDefToType } from "./index.js";
 import type { ProtoDefinition } from "./protodef.js";
 
 export const protoDefArray = (args: ProtoDefinition.ArrayArgs, ctx: Ctx) => {
-    return lines([
-        "(",
-        indent(protoDefToType(args.type, ctx)),
-        ")[]",
-    ]);
+    return TSType.Array(protoDefToType(args.type, ctx));
 };
 
 export const protoDefContainer = (args: ProtoDefinition.ContainerArgs, ctx: Ctx) => {
-    let output: string[] = [];
+    let record: Record<string, TSType> = {};
 
     for(let field of args) {
-        output.push(`${field.name}: ${protoDefToType(field.type, ctx)};`);
+        record[field.name] = protoDefToType(field.type, ctx);
     }
 
-    return lines([
-        "{",
-        indent(output),
-        "}",
-    ]);
+    return TSType.Record(record);
 };
 
 

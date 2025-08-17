@@ -1,3 +1,4 @@
+import { TSType } from "../ts/tstype.js";
 import type { ProtoDefinition } from "./protodef.js";
 
 export const protoDefNumericTypes = [
@@ -40,16 +41,16 @@ export const protoDefBasicToType = (
     type: ProtoDefinition.Type
 ) => {
     if (typeof type == "string") {
-        if (type == "native") return "unique symbol";
+        if (type == "native") return TSType.Reference("unique symbol");
 
-        if (type == "bool") return "boolean";
-        if (type == "cstring") return "string";
-        if (type == "void") return "undefined | null";
-        if (protoDefNumericTypes.includes(type)) return "number";
+        if (type == "bool") return TSType.Reference("boolean");
+        if (type == "cstring") return TSType.Reference("string");
+        if (type == "void") return TSType.Reference("undefined");
+        if (protoDefNumericTypes.includes(type)) return TSType.Reference("number");
     }
 
-    if (type[0] == "buffer") return "Buffer";
-    if (type[0] == "int") return "number";
+    if (type[0] == "buffer") return TSType.Reference("Buffer");
+    if (type[0] == "int") return TSType.Reference("number");
 
     return null;
 };

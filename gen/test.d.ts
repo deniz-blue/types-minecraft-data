@@ -1,15 +1,16 @@
-export namespace MCProtocol.Pc_1_21_5.Types {
+export namespace MCProtocol.PC_1_21_5.Types {
 	export type Varlong = unique symbol;
 	export type Optvarint = number;
 	export type UUID = unique symbol;
 	export type EntityMetadataLoop = unique symbol;
 	export type TopBitSetTerminatedArray = unique symbol;
-	export type RestBuffer = unique symbol;
-	export type AnonymousNbt = unique symbol;
-	export type AnonOptionalNbt = unique symbol;
+	export type RestBuffer = Buffer;
+	export type AnonymousNbt = NBT.Root;
+	export type AnonOptionalNbt = NBT.Root | undefined;
 	export type RegistryEntryHolder = unique symbol;
 	export type RegistryEntryHolderSet = unique symbol;
 	export type ByteArray = Buffer;
+	export type String = string;
 	export type Vec2f = {
 		x: number;
 		y: number;
@@ -35,235 +36,496 @@ export namespace MCProtocol.Pc_1_21_5.Types {
 		y: number;
 		z: number;
 	};
-	export type IDSet = `$$registryEntryHolderSet`;
+	export type IDSet = {
+		name: string;
+	} | {
+		ids: number[];
+	};
 	export type ContainerID = number;
 	export type SlotComponentType = "custom_data" | "max_stack_size" | "max_damage" | "damage" | "unbreakable" | "custom_name" | "item_name" | "item_model" | "lore" | "rarity" | "enchantments" | "can_place_on" | "can_break" | "attribute_modifiers" | "custom_model_data" | "tooltip_display" | "repair_cost" | "creative_slot_lock" | "enchantment_glint_override" | "intangible_projectile" | "food" | "consumable" | "use_remainder" | "use_cooldown" | "damage_resistant" | "tool" | "weapon" | "enchantable" | "equippable" | "repairable" | "glider" | "tooltip_style" | "death_protection" | "blocks_attacks" | "stored_enchantments" | "dyed_color" | "map_color" | "map_id" | "map_decorations" | "map_post_processing" | "potion_duration_scale" | "charged_projectiles" | "bundle_contents" | "potion_contents" | "suspicious_stew_effects" | "writable_book_content" | "written_book_content" | "trim" | "debug_stick_state" | "entity_data" | "bucket_entity_data" | "block_entity_data" | "instrument" | "provides_trim_material" | "ominous_bottle_amplifier" | "jukebox_playable" | "provides_banner_patterns" | "recipes" | "lodestone_tracker" | "firework_explosion" | "fireworks" | "profile" | "note_block_sound" | "banner_patterns" | "base_color" | "pot_decorations" | "container" | "block_state" | "bees" | "lock" | "container_loot" | "break_sound" | "villager/variant" | "wolf/variant" | "wolf/sound_variant" | "wolf/collar" | "fox/variant" | "salmon/size" | "parrot/variant" | "tropical_fish/pattern" | "tropical_fish/base_color" | "tropical_fish/pattern_color" | "mooshroom/variant" | "rabbit/variant" | "pig/variant" | "cow/variant" | "chicken/variant" | "frog/variant" | "horse/variant" | "painting/variant" | "llama/variant" | "axolotl/variant" | "cat/variant" | "cat/collar" | "sheep/color" | "shulker/color";
-	export type SlotComponent = {
-		type: SlotComponentType;
-		data: (AnonymousNbt) | (number) | (number) | (number) | (undefined | null) | (AnonymousNbt) | (AnonymousNbt) | (string) | ((
-			AnonOptionalNbt
-		)[]) | ("common" | "uncommon" | "rare" | "epic") | ({
-			enchantments: (
-				{
-					id: number;
-					level: number;
-				}
-			)[];
-		}) | ({
-			predicates: (
-				ItemBlockPredicate
-			)[];
-		}) | ({
-			predicates: (
-				ItemBlockPredicate
-			)[];
-		}) | ({
-			attributes: (
-				{
-					typeId: number;
-					name: string;
-					value: number;
-					operation: "add" | "multiply_base" | "multiply_total";
-					slot: "any" | "main_hand" | "off_hand" | "hand" | "feet" | "legs" | "chest" | "head" | "armor" | "body" | "saddle";
-				}
-			)[];
+	export type SlotComponent = ({
+		type: "custom_data";
+		data: NBT.Root;
+	} | {
+		type: "max_stack_size";
+		data: number;
+	} | {
+		type: "max_damage";
+		data: number;
+	} | {
+		type: "damage";
+		data: number;
+	} | {
+		type: "unbreakable";
+		data: undefined;
+	} | {
+		type: "custom_name";
+		data: NBT.Root;
+	} | {
+		type: "item_name";
+		data: NBT.Root;
+	} | {
+		type: "item_model";
+		data: string;
+	} | {
+		type: "lore";
+		data: NBT.Root | undefined[];
+	} | {
+		type: "rarity";
+		data: "common" | "uncommon" | "rare" | "epic";
+	} | {
+		type: "enchantments";
+		data: {
+			enchantments: {
+				id: number;
+				level: number;
+			}[];
+		};
+	} | {
+		type: "can_place_on";
+		data: {
+			predicates: ItemBlockPredicate[];
+		};
+	} | {
+		type: "can_break";
+		data: {
+			predicates: ItemBlockPredicate[];
+		};
+	} | {
+		type: "attribute_modifiers";
+		data: {
+			attributes: {
+				typeId: number;
+				name: string;
+				value: number;
+				operation: "add" | "multiply_base" | "multiply_total";
+				slot: "any" | "main_hand" | "off_hand" | "hand" | "feet" | "legs" | "chest" | "head" | "armor" | "body" | "saddle";
+			}[];
 			showTooltip: boolean;
-		}) | ({
-			floats: (
-				number
-			)[];
-			flags: (
-				boolean
-			)[];
-			strings: (
-				string
-			)[];
-			colors: (
-				number
-			)[];
-		}) | ({
+		};
+	} | {
+		type: "custom_model_data";
+		data: {
+			floats: number[];
+			flags: boolean[];
+			strings: string[];
+			colors: number[];
+		};
+	} | {
+		type: "tooltip_display";
+		data: {
 			hideTooltip: boolean;
-			hiddenComponents: (
-				number
-			)[];
-		}) | (number) | (undefined | null) | (boolean) | (undefined | null) | ({
+			hiddenComponents: number[];
+		};
+	} | {
+		type: "repair_cost";
+		data: number;
+	} | {
+		type: "creative_slot_lock";
+		data: undefined;
+	} | {
+		type: "enchantment_glint_override";
+		data: boolean;
+	} | {
+		type: "intangible_projectile";
+		data: undefined;
+	} | {
+		type: "blocks_attacks";
+		data: {
 			blockDelaySeconds: number;
 			disableCooldownScale: number;
-			damageReductions: (
-				{
-					horizontalBlockingAngle: number;
-					type: IDSet | null | undefined;
-					base: number;
-					factor: number;
-				}
-			)[];
+			damageReductions: {
+				horizontalBlockingAngle: number;
+				type?: IDSet;
+				base: number;
+				factor: number;
+			}[];
 			itemDamage: {
 				threshold: number;
 				base: number;
 				factor: number;
 			};
-			bypassedBy: string | null | undefined;
-			blockSound: ItemSoundHolder | null | undefined;
-			disableSound: ItemSoundHolder | null | undefined;
-		}) | ({
+			bypassedBy?: string;
+			blockSound?: ItemSoundHolder;
+			disableSound?: ItemSoundHolder;
+		};
+	} | {
+		type: "food";
+		data: {
 			nutrition: number;
 			saturationModifier: number;
 			canAlwaysEat: boolean;
-		}) | ({
+		};
+	} | {
+		type: "consumable";
+		data: {
 			consume_seconds: number;
 			animation: "none" | "eat" | "drink" | "block" | "bow" | "spear" | "crossbow" | "spyglass" | "toot_horn" | "brush" | "bundle";
 			sound: ItemSoundHolder;
 			makes_particles: boolean;
-			effects: (
-				ItemConsumeEffect
-			)[];
-		}) | (Slot) | ({
+			effects: ItemConsumeEffect[];
+		};
+	} | {
+		type: "use_remainder";
+		data: Slot;
+	} | {
+		type: "use_cooldown";
+		data: {
 			seconds: number;
-			cooldownGroup: string | null | undefined;
-		}) | (string) | ({
-			rules: (
-				{
-					blocks: IDSet;
-					speed: number | null | undefined;
-					correctDropForBlocks: boolean | null | undefined;
-				}
-			)[];
+			cooldownGroup?: string;
+		};
+	} | {
+		type: "damage_resistant";
+		data: string;
+	} | {
+		type: "tool";
+		data: {
+			rules: {
+				blocks: IDSet;
+				speed?: number;
+				correctDropForBlocks?: boolean;
+			}[];
 			defaultMiningSpeed: number;
 			damagePerBlock: number;
 			canDestroyBlocksInCreative: boolean;
-		}) | ({
+		};
+	} | {
+		type: "weapon";
+		data: {
 			itemDamagePerAttack: number;
 			disableBlockingForSeconds: number;
-		}) | (number) | ({
+		};
+	} | {
+		type: "enchantable";
+		data: number;
+	} | {
+		type: "equippable";
+		data: {
 			slot: "main_hand" | "off_hand" | "feet" | "legs" | "chest" | "head" | "body" | "saddle";
 			sound: ItemSoundHolder;
-			model: string | null | undefined;
-			cameraOverlay: string | null | undefined;
-			allowedEntities: IDSet | null | undefined;
+			model?: string;
+			cameraOverlay?: string;
+			allowedEntities?: IDSet;
 			dispensable: boolean;
 			swappable: boolean;
 			damageable: boolean;
 			equipOnInteract: boolean;
-		}) | ({
+		};
+	} | {
+		type: "repairable";
+		data: {
 			items: IDSet;
-		}) | (undefined | null) | (string) | ({
-			effects: (
-				ItemConsumeEffect
-			)[];
-		}) | ({
-			enchantments: (
-				{
-					id: number;
-					level: number;
-				}
-			)[];
-		}) | (number) | (number) | (number) | (AnonymousNbt) | (number) | (number) | ({
-			projectiles: (
-				Slot
-			)[];
-		}) | ({
-			contents: (
-				Slot
-			)[];
-		}) | ({
-			potionId: number | null | undefined;
-			customColor: number | null | undefined;
-			customEffects: (
-				ItemPotionEffect
-			)[];
-			customName: string | null | undefined;
-		}) | ({
-			effects: (
-				{
-					effect: number;
-					duration: number;
-				}
-			)[];
-		}) | ({
-			pages: (
-				ItemBookPage
-			)[];
-		}) | ({
+		};
+	} | {
+		type: "glider";
+		data: undefined;
+	} | {
+		type: "tooltip_style";
+		data: string;
+	} | {
+		type: "death_protection";
+		data: {
+			effects: ItemConsumeEffect[];
+		};
+	} | {
+		type: "stored_enchantments";
+		data: {
+			enchantments: {
+				id: number;
+				level: number;
+			}[];
+		};
+	} | {
+		type: "dyed_color";
+		data: number;
+	} | {
+		type: "map_color";
+		data: number;
+	} | {
+		type: "map_id";
+		data: number;
+	} | {
+		type: "map_decorations";
+		data: NBT.Root;
+	} | {
+		type: "map_post_processing";
+		data: number;
+	} | {
+		type: "potion_duration_scale";
+		data: number;
+	} | {
+		type: "charged_projectiles";
+		data: {
+			projectiles: Slot[];
+		};
+	} | {
+		type: "bundle_contents";
+		data: {
+			contents: Slot[];
+		};
+	} | {
+		type: "potion_contents";
+		data: {
+			potionId?: number;
+			customColor?: number;
+			customEffects: ItemPotionEffect[];
+			customName?: string;
+		};
+	} | {
+		type: "suspicious_stew_effects";
+		data: {
+			effects: {
+				effect: number;
+				duration: number;
+			}[];
+		};
+	} | {
+		type: "writable_book_content";
+		data: {
+			pages: ItemBookPage[];
+		};
+	} | {
+		type: "written_book_content";
+		data: {
 			rawTitle: string;
-			filteredTitle: string | null | undefined;
+			filteredTitle?: string;
 			author: string;
 			generation: number;
-			pages: (
-				ItemWrittenBookPage
-			)[];
+			pages: ItemWrittenBookPage[];
 			resolved: boolean;
-		}) | ({
-			material: `$$registryEntryHolder`;
-			pattern: `$$registryEntryHolder`;
-		}) | (AnonymousNbt) | (AnonymousNbt) | (AnonymousNbt) | (AnonymousNbt) | (`$$registryEntryHolder`) | ({
+		};
+	} | {
+		type: "trim";
+		data: {
+			material: {
+				materialId: number;
+			} | {
+				data: ArmorTrimMaterial;
+			};
+			pattern: {
+				patternId: number;
+			} | {
+				data: ArmorTrimPattern;
+			};
+		};
+	} | {
+		type: "debug_stick_state";
+		data: NBT.Root;
+	} | {
+		type: "entity_data";
+		data: NBT.Root;
+	} | {
+		type: "bucket_entity_data";
+		data: NBT.Root;
+	} | {
+		type: "block_entity_data";
+		data: NBT.Root;
+	} | {
+		type: "instrument";
+		data: {
+			instrumentId: number;
+		} | {
+			data: InstrumentData;
+		};
+	} | {
+		type: "provides_trim_material";
+		data: {
 			hasHolder: boolean;
-			material: (`$$registryEntryHolder`) | (string);
-		}) | (number) | ({
+			material: If<"hasHolder", "true", {
+				materialId: number;
+			} | {
+				data: ArmorTrimMaterial;
+			}> | If<"hasHolder", "false", string>;
+		};
+	} | {
+		type: "ominous_bottle_amplifier";
+		data: number;
+	} | {
+		type: "jukebox_playable";
+		data: {
 			hasHolder: boolean;
-			song: (`$$registryEntryHolder`) | (string);
-		}) | (string) | (AnonymousNbt) | ({
-			globalPosition: {
+			song: If<"hasHolder", "true", {
+				songId: number;
+			} | {
+				data: JukeboxSongData;
+			}> | If<"hasHolder", "false", string>;
+		};
+	} | {
+		type: "provides_banner_patterns";
+		data: string;
+	} | {
+		type: "recipes";
+		data: NBT.Root;
+	} | {
+		type: "lodestone_tracker";
+		data: {
+			globalPosition?: {
 				dimension: string;
 				position: Position;
-			} | null | undefined;
+			};
 			tracked: boolean;
-		}) | (ItemFireworkExplosion) | ({
+		};
+	} | {
+		type: "firework_explosion";
+		data: ItemFireworkExplosion;
+	} | {
+		type: "fireworks";
+		data: {
 			flightDuration: number;
-			explosions: (
-				ItemFireworkExplosion
-			)[];
-		}) | ({
-			name: string | null | undefined;
-			uuid: UUID | null | undefined;
-			properties: (
-				{
-					name: string;
-					value: string;
-					signature: string | null | undefined;
-				}
-			)[];
-		}) | (string) | ({
-			layers: (
-				BannerPatternLayer
-			)[];
-		}) | (number) | ({
-			decorations: (
-				number
-			)[];
-		}) | ({
-			contents: (
-				Slot
-			)[];
-		}) | ({
-			properties: (
-				{
-					name: string;
-					value: string;
-				}
-			)[];
-		}) | ({
-			bees: (
-				{
-					nbtData: AnonymousNbt;
-					ticksInHive: number;
-					minTicksInHive: number;
-				}
-			)[];
-		}) | (AnonymousNbt) | (AnonymousNbt) | (ItemSoundHolder) | (number) | (number) | (number) | (number) | (number) | (number) | (number) | (number) | (number) | (number) | (number) | (number) | (number) | (number) | (`$$registryEntryHolder`) | (number) | (number) | (`$$registryEntryHolder`) | (number) | (number) | (number) | (number) | (number) | (number);
-	};
+			explosions: ItemFireworkExplosion[];
+		};
+	} | {
+		type: "profile";
+		data: {
+			name?: string;
+			uuid?: UUID;
+			properties: {
+				name: string;
+				value: string;
+				signature?: string;
+			}[];
+		};
+	} | {
+		type: "note_block_sound";
+		data: string;
+	} | {
+		type: "banner_patterns";
+		data: {
+			layers: BannerPatternLayer[];
+		};
+	} | {
+		type: "base_color";
+		data: number;
+	} | {
+		type: "pot_decorations";
+		data: {
+			decorations: number[];
+		};
+	} | {
+		type: "container";
+		data: {
+			contents: Slot[];
+		};
+	} | {
+		type: "block_state";
+		data: {
+			properties: {
+				name: string;
+				value: string;
+			}[];
+		};
+	} | {
+		type: "bees";
+		data: {
+			bees: {
+				nbtData: NBT.Root;
+				ticksInHive: number;
+				minTicksInHive: number;
+			}[];
+		};
+	} | {
+		type: "lock";
+		data: NBT.Root;
+	} | {
+		type: "container_loot";
+		data: NBT.Root;
+	} | {
+		type: "break_sound";
+		data: ItemSoundHolder;
+	} | {
+		type: "villager/variant";
+		data: number;
+	} | {
+		type: "wolf/variant";
+		data: number;
+	} | {
+		type: "wolf/sound_variant";
+		data: number;
+	} | {
+		type: "wolf/collar";
+		data: number;
+	} | {
+		type: "fox/variant";
+		data: number;
+	} | {
+		type: "salmon/size";
+		data: number;
+	} | {
+		type: "parrot/variant";
+		data: number;
+	} | {
+		type: "tropical_fish/pattern";
+		data: number;
+	} | {
+		type: "tropical_fish/base_color";
+		data: number;
+	} | {
+		type: "tropical_fish/pattern_color";
+		data: number;
+	} | {
+		type: "mooshroom/variant";
+		data: number;
+	} | {
+		type: "rabbit/variant";
+		data: number;
+	} | {
+		type: "pig/variant";
+		data: number;
+	} | {
+		type: "cow/variant";
+		data: number;
+	} | {
+		type: "chicken/variant";
+		data: {
+			variantId: number;
+		} | {
+			variantData: string;
+		};
+	} | {
+		type: "frog/variant";
+		data: number;
+	} | {
+		type: "horse/variant";
+		data: number;
+	} | {
+		type: "painting/variant";
+		data: {
+			variantId: number;
+		} | {
+			data: EntityMetadataPaintingVariant;
+		};
+	} | {
+		type: "llama/variant";
+		data: number;
+	} | {
+		type: "axolotl/variant";
+		data: number;
+	} | {
+		type: "cat/variant";
+		data: number;
+	} | {
+		type: "cat/collar";
+		data: number;
+	} | {
+		type: "sheep/color";
+		data: number;
+	} | {
+		type: "shulker/color";
+		data: number;
+	});
 	export type ItemSoundEvent = {
 		soundName: string;
-		fixedRange: number | null | undefined;
+		fixedRange?: number;
 	};
-	export type ItemSoundHolder = `$$registryEntryHolder`;
+	export type ItemSoundHolder = {
+		soundId: number;
+	} | {
+		data: ItemSoundEvent;
+	};
 	export type ItemFireworkExplosion = {
 		shape: "small_ball" | "large_ball" | "star" | "creeper" | "burst";
-		colors: (
-			number
-		)[];
-		fadeColors: (
-			number
-		)[];
+		colors: number[];
+		fadeColors: number[];
 		hasTrail: boolean;
 		hasTwinkle: boolean;
 	};
@@ -273,7 +535,7 @@ export namespace MCProtocol.Pc_1_21_5.Types {
 		ambient: boolean;
 		showParticles: boolean;
 		showIcon: boolean;
-		hiddenEffect: ItemEffectDetail | null | undefined;
+		hiddenEffect?: ItemEffectDetail;
 	};
 	export type ItemPotionEffect = {
 		id: number;
@@ -281,78 +543,88 @@ export namespace MCProtocol.Pc_1_21_5.Types {
 	};
 	export type ItemBlockProperty = {
 		name: string;
-		isExactMatch: boolean;
-		value: ({
+	} & ({
+		isExactMatch: true;
+		value: {
 			exactValue: string;
-		}) | ({
+		};
+	} | {
+		isExactMatch: false;
+		value: {
 			minValue: string;
 			maxValue: string;
-		});
-	};
-	export type ExactComponentMatcher = (
-		SlotComponent
-	)[];
+		};
+	});
+	export type ExactComponentMatcher = SlotComponent[];
 	export type DataComponentMatchers = {
 		exactMatchers: ExactComponentMatcher;
-		partialMatchers: (
-			number
-		)[];
+		partialMatchers: number[];
 	};
 	export type ItemBlockPredicate = {
-		blockSet: `$$registryEntryHolderSet` | null | undefined;
-		properties: (
-			ItemBlockProperty
-		)[] | null | undefined;
-		nbt: AnonOptionalNbt;
+		blockSet?: {
+			name: string;
+		} | {
+			blockIds: number[];
+		};
+		properties?: ItemBlockProperty[];
+		nbt?: NBT.Root;
 		components: DataComponentMatchers;
 	};
 	export type ItemBookPage = {
 		content: string;
-		filteredContent: string | null | undefined;
+		filteredContent?: string;
 	};
 	export type ItemWrittenBookPage = {
-		content: AnonymousNbt;
-		filteredContent: AnonOptionalNbt;
+		content: NBT.Root;
+		filteredContent?: NBT.Root;
 	};
-	export type ItemConsumeEffect = {
-		type: "apply_effects" | "remove_effects" | "clear_all_effects" | "teleport_randomly" | "play_sound";
-		undefined: ({
-			effects: (
-				ItemPotionEffect
-			)[];
+	export type ItemConsumeEffect = ({
+		type: "apply_effects";
+		undefined: {
+			effects: ItemPotionEffect[];
 			probability: number;
-		}) | ({
+		};
+	} | {
+		type: "remove_effects";
+		undefined: {
 			effects: IDSet;
-		}) | (undefined | null) | ({
+		};
+	} | {
+		type: "clear_all_effects";
+		undefined: undefined;
+	} | {
+		type: "teleport_randomly";
+		undefined: {
 			diameter: number;
-		}) | ({
+		};
+	} | {
+		type: "play_sound";
+		undefined: {
 			sound: ItemSoundHolder;
-		});
-	};
+		};
+	});
 	export type ArmorTrimMaterial = {
 		assetBase: string;
-		overrideArmorAssets: (
-			{
-				key: string;
-				value: string;
-			}
-		)[];
-		description: AnonymousNbt;
+		overrideArmorAssets: {
+			key: string;
+			value: string;
+		}[];
+		description: NBT.Root;
 	};
 	export type ArmorTrimPattern = {
 		assetId: string;
-		description: AnonymousNbt;
+		description: NBT.Root;
 		decal: boolean;
 	};
 	export type InstrumentData = {
 		soundEvent: ItemSoundHolder;
 		useDuration: number;
 		range: number;
-		description: AnonymousNbt;
+		description: NBT.Root;
 	};
 	export type JukeboxSongData = {
 		soundEvent: ItemSoundHolder;
-		description: AnonymousNbt;
+		description: NBT.Root;
 		lengthInSeconds: number;
 		comparatorOutput: number;
 	};
@@ -361,68 +633,87 @@ export namespace MCProtocol.Pc_1_21_5.Types {
 		translationKey: string;
 	};
 	export type BannerPatternLayer = {
-		pattern: `$$registryEntryHolder`;
+		pattern: {
+			patternId: number;
+		} | {
+			data: BannerPattern;
+		};
 		colorId: number;
 	};
 	export type UntrustedSlotComponent = {
 		type: SlotComponentType;
 		data: ByteArray;
 	};
-	export type UntrustedSlot = {
-		itemCount: number;
-		undefined: (undefined | null) | (undefined | null) | ({
+	export type UntrustedSlot = ({
+		itemCount: 0;
+		undefined: undefined;
+	} | {
+		itemCount: false;
+		undefined: undefined;
+	} | {
+		itemCount: never;
+		undefined: {
 			itemId: number;
 			addedComponentCount: number;
 			removedComponentCount: number;
-			components: (
-				UntrustedSlotComponent
-			)[];
-			removeComponents: (
-				{
-					type: SlotComponentType;
-				}
-			)[];
-		});
-	};
-	export type Slot = {
-		itemCount: number;
-		undefined: (undefined | null) | ({
+			components: UntrustedSlotComponent[];
+			removeComponents: {
+				type: SlotComponentType;
+			}[];
+		};
+	});
+	export type Slot = ({
+		itemCount: 0;
+		undefined: undefined;
+	} | {
+		itemCount: never;
+		undefined: {
 			itemId: number;
 			addedComponentCount: number;
 			removedComponentCount: number;
-			components: (
-				SlotComponent
-			)[];
-			removeComponents: (
-				{
-					type: SlotComponentType;
-				}
-			)[];
-		});
-	};
+			components: SlotComponent[];
+			removeComponents: {
+				type: SlotComponentType;
+			}[];
+		};
+	});
 	export type HashedSlot = {
 		itemId: number;
 		itemCount: number;
-		components: (
-			{
-				type: SlotComponentType;
-				hash: number;
-			}
-		)[];
-		removeComponents: (
-			{
-				type: SlotComponentType;
-			}
-		)[];
+		components: {
+			type: SlotComponentType;
+			hash: number;
+		}[];
+		removeComponents: {
+			type: SlotComponentType;
+		}[];
 	};
-	export type Particle = {
-		type: "angry_villager" | "block" | "block_marker" | "bubble" | "cloud" | "crit" | "damage_indicator" | "dragon_breath" | "dripping_lava" | "falling_lava" | "landing_lava" | "dripping_water" | "falling_water" | "dust" | "dust_color_transition" | "effect" | "elder_guardian" | "enchanted_hit" | "enchant" | "end_rod" | "entity_effect" | "explosion_emitter" | "explosion" | "gust" | "small_gust" | "gust_emitter_large" | "gust_emitter_small" | "sonic_boom" | "falling_dust" | "firework" | "fishing" | "flame" | "infested" | "cherry_leaves" | "pale_oak_leaves" | "tinted_leaves" | "sculk_soul" | "sculk_charge" | "sculk_charge_pop" | "soul_fire_flame" | "soul" | "flash" | "happy_villager" | "composter" | "heart" | "instant_effect" | "item" | "vibration" | "trail" | "item_slime" | "item_cobweb" | "item_snowball" | "large_smoke" | "lava" | "mycelium" | "note" | "poof" | "portal" | "rain" | "smoke" | "white_smoke" | "sneeze" | "spit" | "squid_ink" | "sweep_attack" | "totem_of_undying" | "underwater" | "splash" | "witch" | "bubble_pop" | "current_down" | "bubble_column_up" | "nautilus" | "dolphin" | "campfire_cosy_smoke" | "campfire_signal_smoke" | "dripping_honey" | "falling_honey" | "landing_honey" | "falling_nectar" | "falling_spore_blossom" | "ash" | "crimson_spore" | "warped_spore" | "spore_blossom_air" | "dripping_obsidian_tear" | "falling_obsidian_tear" | "landing_obsidian_tear" | "reverse_portal" | "white_ash" | "small_flame" | "snowflake" | "dripping_dripstone_lava" | "falling_dripstone_lava" | "dripping_dripstone_water" | "falling_dripstone_water" | "glow_squid_ink" | "glow" | "wax_on" | "wax_off" | "electric_spark" | "scrape" | "shriek" | "egg_crack" | "dust_plume" | "trial_spawner_detected_player" | "trial_spawner_detected_player_ominous" | "vault_connection" | "dust_pillar" | "ominous_spawning" | "raid_omen" | "trial_omen" | "block_crumble" | "firefly";
-		data: (number) | (number) | (number) | (number) | (number) | ({
+	export type Particle = ({
+		type: "block";
+		data: number;
+	} | {
+		type: "block_marker";
+		data: number;
+	} | {
+		type: "falling_dust";
+		data: number;
+	} | {
+		type: "dust_pillar";
+		data: number;
+	} | {
+		type: "block_crumble";
+		data: number;
+	} | {
+		type: "dust";
+		data: {
 			red: number;
 			green: number;
 			blue: number;
 			scale: number;
-		}) | ({
+		};
+	} | {
+		type: "dust_color_transition";
+		data: {
 			fromRed: number;
 			fromGreen: number;
 			fromBlue: number;
@@ -430,21 +721,43 @@ export namespace MCProtocol.Pc_1_21_5.Types {
 			toRed: number;
 			toGreen: number;
 			toBlue: number;
-		}) | (number) | (Slot) | (number) | (number) | ({
+		};
+	} | {
+		type: "entity_effect";
+		data: number;
+	} | {
+		type: "item";
+		data: Slot;
+	} | {
+		type: "sculk_charge";
+		data: number;
+	} | {
+		type: "shriek";
+		data: number;
+	} | {
+		type: "vibration";
+		data: {
 			positionType: "block" | "entity";
-			position: (Position) | ({
+			position: If<"positionType", "block", Position> | If<"positionType", "entity", {
 				entityId: number;
 				entityEyeHeight: number;
-			});
+			}>;
 			ticks: number;
-		}) | ({
+		};
+	} | {
+		type: "trail";
+		data: {
 			target: Vec3f64;
 			color: number;
-		}) | (number) | (undefined | null);
-	};
-	export type Ingredient = (
-		Slot
-	)[];
+		};
+	} | {
+		type: "tinted_leaves";
+		data: number;
+	} | {
+		type: "firefly";
+		data: undefined;
+	});
+	export type Ingredient = Slot[];
 	export type Position = {
 		x?: boolean;
 		z?: boolean;
@@ -455,43 +768,146 @@ export namespace MCProtocol.Pc_1_21_5.Types {
 		z: number;
 		x: number;
 	};
-	export type PreviousMessages = (
-		{
-			id: number;
-			signature: (Buffer) | (undefined | null);
-		}
-	)[];
+	export type PreviousMessages = ({
+		id: 0;
+		signature: Buffer;
+	})[];
 	export type EntityMetadataEntry = {
 		key: number;
-		type: "byte" | "int" | "long" | "float" | "string" | "component" | "optional_component" | "item_stack" | "boolean" | "rotations" | "block_pos" | "optional_block_pos" | "direction" | "optional_uuid" | "block_state" | "optional_block_state" | "compound_tag" | "particle" | "particles" | "villager_data" | "optional_unsigned_int" | "pose" | "cat_variant" | "cow_variant" | "wolf_variant" | "wolf_sound_variant" | "frog_variant" | "pig_variant" | "chicken_variant" | "optional_global_pos" | "painting_variant" | "sniffer_state" | "armadillo_state" | "vector3" | "quaternion";
-		value: (number) | (number) | (Varlong) | (number) | (string) | (AnonymousNbt) | (AnonymousNbt | null | undefined) | (Slot) | (boolean) | ({
+	} & ({
+		type: "byte";
+		value: number;
+	} | {
+		type: "int";
+		value: number;
+	} | {
+		type: "long";
+		value: Varlong;
+	} | {
+		type: "float";
+		value: number;
+	} | {
+		type: "string";
+		value: string;
+	} | {
+		type: "component";
+		value: NBT.Root;
+	} | {
+		type: "optional_component";
+		value?: NBT.Root;
+	} | {
+		type: "item_stack";
+		value: Slot;
+	} | {
+		type: "boolean";
+		value: boolean;
+	} | {
+		type: "rotations";
+		value: {
 			pitch: number;
 			yaw: number;
 			roll: number;
-		}) | (Position) | (Position | null | undefined) | (number) | (UUID | null | undefined) | (number) | (Optvarint) | (AnonymousNbt) | (Particle) | ((
-			Particle
-		)[]) | ({
+		};
+	} | {
+		type: "block_pos";
+		value: Position;
+	} | {
+		type: "optional_block_pos";
+		value?: Position;
+	} | {
+		type: "direction";
+		value: number;
+	} | {
+		type: "optional_uuid";
+		value?: UUID;
+	} | {
+		type: "block_state";
+		value: number;
+	} | {
+		type: "optional_block_state";
+		value: Optvarint;
+	} | {
+		type: "compound_tag";
+		value: NBT.Root;
+	} | {
+		type: "particle";
+		value: Particle;
+	} | {
+		type: "particles";
+		value: Particle[];
+	} | {
+		type: "villager_data";
+		value: {
 			villagerType: number;
 			villagerProfession: number;
 			level: number;
-		}) | (Optvarint) | (number) | (number) | (number) | (number) | (number) | (number) | (number) | (`$$registryEntryHolder`) | (string | null | undefined) | (`$$registryEntryHolder`) | (number) | (number) | (Vec3f) | (Vec4f);
-	};
+		};
+	} | {
+		type: "optional_unsigned_int";
+		value: Optvarint;
+	} | {
+		type: "pose";
+		value: number;
+	} | {
+		type: "cat_variant";
+		value: number;
+	} | {
+		type: "cow_variant";
+		value: number;
+	} | {
+		type: "wolf_variant";
+		value: number;
+	} | {
+		type: "wolf_sound_variant";
+		value: number;
+	} | {
+		type: "frog_variant";
+		value: number;
+	} | {
+		type: "pig_variant";
+		value: number;
+	} | {
+		type: "chicken_variant";
+		value: {
+			variantId: number;
+		} | {
+			variantData: string;
+		};
+	} | {
+		type: "optional_global_pos";
+		value?: string;
+	} | {
+		type: "painting_variant";
+		value: {
+			variantId: number;
+		} | {
+			variantData: EntityMetadataPaintingVariant;
+		};
+	} | {
+		type: "sniffer_state";
+		value: number;
+	} | {
+		type: "armadillo_state";
+		value: number;
+	} | {
+		type: "vector3";
+		value: Vec3f;
+	} | {
+		type: "quaternion";
+		value: Vec4f;
+	});
 	export type EntityMetadataPaintingVariant = {
 		width: number;
 		height: number;
 		assetId: string;
-		title: AnonymousNbt | null | undefined;
-		author: AnonymousNbt | null | undefined;
+		title?: NBT.Root;
+		author?: NBT.Root;
 	};
 	export type EntityMetadata = `$$entityMetadataLoop`;
-	export type Tags = (
-		{
-			tagName: string;
-			entries: (
-				number
-			)[];
-		}
-	)[];
+	export type Tags = {
+		tagName: string;
+		entries: number[];
+	}[];
 	export type ChunkBlockEntity = {
 		undefined: {
 			x?: boolean;
@@ -499,7 +915,7 @@ export namespace MCProtocol.Pc_1_21_5.Types {
 		};
 		y: number;
 		type: number;
-		nbtData: AnonOptionalNbt;
+		nbtData?: NBT.Root;
 	};
 	export type ChatSession = {
 		uuid: UUID;
@@ -508,16 +924,14 @@ export namespace MCProtocol.Pc_1_21_5.Types {
 			keyBytes: Buffer;
 			keySignature: Buffer;
 		};
-	} | null | undefined;
+	} | undefined;
 	export type GameProfile = {
 		name: string;
-		properties: (
-			{
-				name: string;
-				value: string;
-				signature: string | null | undefined;
-			}
-		)[];
+		properties: {
+			name: string;
+			value: string;
+			signature?: string;
+		}[];
 	};
 	export type CommandNode = {
 		flags: {
@@ -527,70 +941,78 @@ export namespace MCProtocol.Pc_1_21_5.Types {
 			has_command?: boolean;
 			command_node_type?: boolean;
 		};
-		children: (
-			number
-		)[];
-		redirectNode: (number) | (undefined | null);
-		extraNodeData: (undefined | null) | ({
+		children: number[];
+	} & ({
+		flags/has_redirect_node: 1;
+		redirectNode: number;
+	}) & ({
+		flags/command_node_type: 0;
+		extraNodeData: undefined;
+	} | {
+		flags/command_node_type: 1;
+		extraNodeData: {
 			name: string;
-		}) | ({
+		};
+	} | {
+		flags/command_node_type: 2;
+		extraNodeData: {
 			name: string;
 			parser: "brigadier:bool" | "brigadier:float" | "brigadier:double" | "brigadier:integer" | "brigadier:long" | "brigadier:string" | "minecraft:entity" | "minecraft:game_profile" | "minecraft:block_pos" | "minecraft:column_pos" | "minecraft:vec3" | "minecraft:vec2" | "minecraft:block_state" | "minecraft:block_predicate" | "minecraft:item_stack" | "minecraft:item_predicate" | "minecraft:color" | "minecraft:component" | "minecraft:style" | "minecraft:message" | "minecraft:nbt" | "minecraft:nbt_tag" | "minecraft:nbt_path" | "minecraft:objective" | "minecraft:objective_criteria" | "minecraft:operation" | "minecraft:particle" | "minecraft:angle" | "minecraft:rotation" | "minecraft:scoreboard_slot" | "minecraft:score_holder" | "minecraft:swizzle" | "minecraft:team" | "minecraft:item_slot" | "minecraft:item_slots" | "minecraft:resource_location" | "minecraft:function" | "minecraft:entity_anchor" | "minecraft:int_range" | "minecraft:float_range" | "minecraft:dimension" | "minecraft:gamemode" | "minecraft:time" | "minecraft:resource_or_tag" | "minecraft:resource_or_tag_key" | "minecraft:resource" | "minecraft:resource_key" | "minecraft:resource_selector" | "minecraft:template_mirror" | "minecraft:template_rotation" | "minecraft:heightmap" | "minecraft:loot_table" | "minecraft:loot_predicate" | "minecraft:loot_modifier" | "minecraft:uuid";
-			properties: (undefined | null) | ({
+			properties: If<"parser", "brigadier:bool", undefined> | If<"parser", "brigadier:float", {
 				flags: {
 					unused?: boolean;
 					max_present?: boolean;
 					min_present?: boolean;
 				};
-				min: (number) | (undefined | null);
-				max: (number) | (undefined | null);
-			}) | ({
+				min: If<"flags/min_present", "1", number>;
+				max: If<"flags/max_present", "1", number>;
+			}> | If<"parser", "brigadier:double", {
 				flags: {
 					unused?: boolean;
 					max_present?: boolean;
 					min_present?: boolean;
 				};
-				min: (number) | (undefined | null);
-				max: (number) | (undefined | null);
-			}) | ({
+				min: If<"flags/min_present", "1", number>;
+				max: If<"flags/max_present", "1", number>;
+			}> | If<"parser", "brigadier:integer", {
 				flags: {
 					unused?: boolean;
 					max_present?: boolean;
 					min_present?: boolean;
 				};
-				min: (number) | (undefined | null);
-				max: (number) | (undefined | null);
-			}) | ({
+				min: If<"flags/min_present", "1", number>;
+				max: If<"flags/max_present", "1", number>;
+			}> | If<"parser", "brigadier:long", {
 				flags: {
 					unused?: boolean;
 					max_present?: boolean;
 					min_present?: boolean;
 				};
-				min: (number) | (undefined | null);
-				max: (number) | (undefined | null);
-			}) | ("SINGLE_WORD" | "QUOTABLE_PHRASE" | "GREEDY_PHRASE") | ({
+				min: If<"flags/min_present", "1", number>;
+				max: If<"flags/max_present", "1", number>;
+			}> | If<"parser", "brigadier:string", "SINGLE_WORD" | "QUOTABLE_PHRASE" | "GREEDY_PHRASE"> | If<"parser", "minecraft:entity", {
 				unused?: boolean;
 				onlyAllowPlayers?: boolean;
 				onlyAllowEntities?: boolean;
-			}) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | ({
+			}> | If<"parser", "minecraft:game_profile", undefined> | If<"parser", "minecraft:block_pos", undefined> | If<"parser", "minecraft:column_pos", undefined> | If<"parser", "minecraft:vec3", undefined> | If<"parser", "minecraft:vec2", undefined> | If<"parser", "minecraft:block_state", undefined> | If<"parser", "minecraft:block_predicate", undefined> | If<"parser", "minecraft:item_stack", undefined> | If<"parser", "minecraft:item_predicate", undefined> | If<"parser", "minecraft:color", undefined> | If<"parser", "minecraft:component", undefined> | If<"parser", "minecraft:message", undefined> | If<"parser", "minecraft:nbt", undefined> | If<"parser", "minecraft:nbt_path", undefined> | If<"parser", "minecraft:objective", undefined> | If<"parser", "minecraft:objective_criteria", undefined> | If<"parser", "minecraft:operation", undefined> | If<"parser", "minecraft:particle", undefined> | If<"parser", "minecraft:angle", undefined> | If<"parser", "minecraft:rotation", undefined> | If<"parser", "minecraft:scoreboard_slot", undefined> | If<"parser", "minecraft:score_holder", {
 				unused?: boolean;
 				allowMultiple?: boolean;
-			}) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null) | ({
+			}> | If<"parser", "minecraft:swizzle", undefined> | If<"parser", "minecraft:team", undefined> | If<"parser", "minecraft:item_slot", undefined> | If<"parser", "minecraft:resource_location", undefined> | If<"parser", "minecraft:function", undefined> | If<"parser", "minecraft:entity_anchor", undefined> | If<"parser", "minecraft:int_range", undefined> | If<"parser", "minecraft:float_range", undefined> | If<"parser", "minecraft:dimension", undefined> | If<"parser", "minecraft:gamemode", undefined> | If<"parser", "minecraft:time", {
 				min: number;
-			}) | ({
+			}> | If<"parser", "minecraft:resource_or_tag", {
 				registry: string;
-			}) | ({
+			}> | If<"parser", "minecraft:resource_or_tag_key", {
 				registry: string;
-			}) | ({
+			}> | If<"parser", "minecraft:resource", {
 				registry: string;
-			}) | ({
+			}> | If<"parser", "minecraft:resource_key", {
 				registry: string;
-			}) | ({
+			}> | If<"parser", "minecraft:resource_selector", {
 				registry: string;
-			}) | (undefined | null) | (undefined | null) | (undefined | null) | (undefined | null);
-			suggestionType: (string) | (undefined | null);
-		});
-	};
+			}> | If<"parser", "minecraft:template_mirror", undefined> | If<"parser", "minecraft:template_rotation", undefined> | If<"parser", "minecraft:heightmap", undefined> | If<"parser", "minecraft:uuid", undefined>;
+			suggestionType: If<"../flags/has_custom_suggestions", "1", string>;
+		};
+	});
 	export type PacketCommonSettings = {
 		locale: string;
 		viewDistance: number;
@@ -618,53 +1040,47 @@ export namespace MCProtocol.Pc_1_21_5.Types {
 		value: ByteArray;
 	};
 	export type PacketCommonSelectKnownPacks = {
-		packs: (
-			{
-				namespace: string;
-				id: string;
-				version: string;
-			}
-		)[];
+		packs: {
+			namespace: string;
+			id: string;
+			version: string;
+		}[];
 	};
 	export type PacketCommonCustomReportDetails = {
-		details: (
-			{
-				key: string;
-				value: string;
-			}
-		)[];
+		details: {
+			key: string;
+			value: string;
+		}[];
 	};
 	export type PacketCommonRemoveResourcePack = {
-		uuid: UUID | null | undefined;
+		uuid?: UUID;
 	};
 	export type PacketCommonAddResourcePack = {
 		uuid: UUID;
 		url: string;
 		hash: string;
 		forced: boolean;
-		promptMessage: AnonymousNbt | null | undefined;
+		promptMessage?: NBT.Root;
 	};
 	export type ServerLinkType = "bug_report" | "community_guidelines" | "support" | "status" | "feedback" | "community" | "website" | "forums" | "news" | "announcements";
 	export type PacketCommonServerLinks = {
-		links: (
-			{
-				hasKnownType: boolean;
-				knownType: (ServerLinkType);
-				unknownType: (AnonymousNbt);
-				link: string;
-			}
-		)[];
+		links: {
+			link: string;
+		} & ({
+			hasKnownType: true;
+			knownType: ServerLinkType;
+		} | {
+			hasKnownType: false;
+			unknownType: NBT.Root;
+		})[];
 	};
 }
 
-export namespace MCProtocol.Pc_1_21_5.Handshake.Clientbound {
-	export type Packet = {
-		name: void;
-		params: void;
-	};
+export namespace MCProtocol.PC_1_21_5.Handshake.Clientbound {
+	export type Packet = void;
 }
 
-export namespace MCProtocol.Pc_1_21_5.Handshake.Serverbound {
+export namespace MCProtocol.PC_1_21_5.Handshake.Serverbound {
 	export type PacketSetProtocol = {
 		protocolVersion: number;
 		serverHost: string;
@@ -674,39 +1090,46 @@ export namespace MCProtocol.Pc_1_21_5.Handshake.Serverbound {
 	export type PacketLegacyServerListPing = {
 		payload: number;
 	};
-	export type Packet = {
-		name: "set_protocol" | "legacy_server_list_ping";
-		params: (PacketSetProtocol) | (PacketLegacyServerListPing);
-	};
+	export type Packet = ({
+		name: "set_protocol";
+		params: PacketSetProtocol;
+	} | {
+		name: "legacy_server_list_ping";
+		params: PacketLegacyServerListPing;
+	});
 }
 
-export namespace MCProtocol.Pc_1_21_5.Status.Clientbound {
+export namespace MCProtocol.PC_1_21_5.Status.Clientbound {
 	export type PacketServerInfo = {
 		response: string;
 	};
 	export type PacketPing = {
 		time: number;
 	};
-	export type Packet = {
-		name: "server_info" | "ping";
-		params: (PacketServerInfo) | (PacketPing);
-	};
+	export type Packet = ({
+		name: "server_info";
+		params: PacketServerInfo;
+	} | {
+		name: "ping";
+		params: PacketPing;
+	});
 }
 
-export namespace MCProtocol.Pc_1_21_5.Status.Serverbound {
-	export type PacketPingStart = {
-		
-	};
+export namespace MCProtocol.PC_1_21_5.Status.Serverbound {
+	export type PacketPingStart = void;
 	export type PacketPing = {
 		time: number;
 	};
-	export type Packet = {
-		name: "ping_start" | "ping";
-		params: (PacketPingStart) | (PacketPing);
-	};
+	export type Packet = ({
+		name: "ping_start";
+		params: PacketPingStart;
+	} | {
+		name: "ping";
+		params: PacketPing;
+	});
 }
 
-export namespace MCProtocol.Pc_1_21_5.Login.Clientbound {
+export namespace MCProtocol.PC_1_21_5.Login.Clientbound {
 	export type PacketDisconnect = {
 		reason: string;
 	};
@@ -717,15 +1140,13 @@ export namespace MCProtocol.Pc_1_21_5.Login.Clientbound {
 		shouldAuthenticate: boolean;
 	};
 	export type PacketSuccess = {
-		uuid: MCProtocol.Pc_1_21_5.Types.UUID;
+		uuid: MCProtocol.PC_1_21_5.Types.UUID;
 		username: string;
-		properties: (
-			{
-				name: string;
-				value: string;
-				signature: string | null | undefined;
-			}
-		)[];
+		properties: {
+			name: string;
+			value: string;
+			signature?: string;
+		}[];
 	};
 	export type PacketCompress = {
 		threshold: number;
@@ -733,18 +1154,33 @@ export namespace MCProtocol.Pc_1_21_5.Login.Clientbound {
 	export type PacketLoginPluginRequest = {
 		messageId: number;
 		channel: string;
-		data: MCProtocol.Pc_1_21_5.Types.RestBuffer;
+		data: Buffer;
 	};
-	export type Packet = {
-		name: "disconnect" | "encryption_begin" | "success" | "compress" | "login_plugin_request" | "cookie_request";
-		params: (PacketDisconnect) | (PacketEncryptionBegin) | (PacketSuccess) | (PacketCompress) | (PacketLoginPluginRequest) | (MCProtocol.Pc_1_21_5.Types.PacketCommonCookieRequest);
-	};
+	export type Packet = ({
+		name: "disconnect";
+		params: PacketDisconnect;
+	} | {
+		name: "encryption_begin";
+		params: PacketEncryptionBegin;
+	} | {
+		name: "success";
+		params: PacketSuccess;
+	} | {
+		name: "compress";
+		params: PacketCompress;
+	} | {
+		name: "login_plugin_request";
+		params: PacketLoginPluginRequest;
+	} | {
+		name: "cookie_request";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonCookieRequest;
+	});
 }
 
-export namespace MCProtocol.Pc_1_21_5.Login.Serverbound {
+export namespace MCProtocol.PC_1_21_5.Login.Serverbound {
 	export type PacketLoginStart = {
 		username: string;
-		playerUUID: MCProtocol.Pc_1_21_5.Types.UUID;
+		playerUUID: MCProtocol.PC_1_21_5.Types.UUID;
 	};
 	export type PacketEncryptionBegin = {
 		sharedSecret: Buffer;
@@ -752,73 +1188,119 @@ export namespace MCProtocol.Pc_1_21_5.Login.Serverbound {
 	};
 	export type PacketLoginPluginResponse = {
 		messageId: number;
-		data: MCProtocol.Pc_1_21_5.Types.RestBuffer | null | undefined;
+		data?: Buffer;
 	};
-	export type PacketLoginAcknowledged = {
-		
-	};
-	export type Packet = {
-		name: "login_start" | "encryption_begin" | "login_plugin_response" | "login_acknowledged" | "cookie_response";
-		params: (PacketLoginStart) | (PacketEncryptionBegin) | (PacketLoginPluginResponse) | (PacketLoginAcknowledged) | (MCProtocol.Pc_1_21_5.Types.PacketCommonCookieResponse);
-	};
+	export type PacketLoginAcknowledged = void;
+	export type Packet = ({
+		name: "login_start";
+		params: PacketLoginStart;
+	} | {
+		name: "encryption_begin";
+		params: PacketEncryptionBegin;
+	} | {
+		name: "login_plugin_response";
+		params: PacketLoginPluginResponse;
+	} | {
+		name: "login_acknowledged";
+		params: PacketLoginAcknowledged;
+	} | {
+		name: "cookie_response";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonCookieResponse;
+	});
 }
 
-export namespace MCProtocol.Pc_1_21_5.Config.Clientbound {
+export namespace MCProtocol.PC_1_21_5.Config.Clientbound {
 	export type PacketCustomPayload = {
 		channel: string;
-		data: MCProtocol.Pc_1_21_5.Types.RestBuffer;
+		data: Buffer;
 	};
 	export type PacketDisconnect = {
-		reason: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
+		reason: NBT.Root;
 	};
-	export type PacketFinishConfiguration = {
-		
-	};
+	export type PacketFinishConfiguration = void;
 	export type PacketKeepAlive = {
 		keepAliveId: number;
 	};
 	export type PacketPing = {
 		id: number;
 	};
-	export type PacketResetChat = {
-		
-	};
+	export type PacketResetChat = void;
 	export type PacketRegistryData = {
 		id: string;
-		entries: (
-			{
-				key: string;
-				value: MCProtocol.Pc_1_21_5.Types.AnonymousNbt | null | undefined;
-			}
-		)[];
+		entries: {
+			key: string;
+			value?: NBT.Root;
+		}[];
 	};
 	export type PacketFeatureFlags = {
-		features: (
-			string
-		)[];
+		features: string[];
 	};
 	export type PacketTags = {
-		tags: (
-			{
-				tagType: string;
-				tags: MCProtocol.Pc_1_21_5.Types.Tags;
-			}
-		)[];
+		tags: {
+			tagType: string;
+			tags: MCProtocol.PC_1_21_5.Types.Tags;
+		}[];
 	};
-	export type Packet = {
-		name: "cookie_request" | "custom_payload" | "disconnect" | "finish_configuration" | "keep_alive" | "ping" | "reset_chat" | "registry_data" | "remove_resource_pack" | "add_resource_pack" | "store_cookie" | "transfer" | "feature_flags" | "tags" | "select_known_packs" | "custom_report_details" | "server_links";
-		params: (MCProtocol.Pc_1_21_5.Types.PacketCommonCookieRequest) | (PacketCustomPayload) | (PacketDisconnect) | (PacketFinishConfiguration) | (PacketKeepAlive) | (PacketPing) | (PacketResetChat) | (PacketRegistryData) | (MCProtocol.Pc_1_21_5.Types.PacketCommonRemoveResourcePack) | (MCProtocol.Pc_1_21_5.Types.PacketCommonAddResourcePack) | (MCProtocol.Pc_1_21_5.Types.PacketCommonStoreCookie) | (MCProtocol.Pc_1_21_5.Types.PacketCommonTransfer) | (PacketFeatureFlags) | (PacketTags) | (MCProtocol.Pc_1_21_5.Types.PacketCommonSelectKnownPacks) | (MCProtocol.Pc_1_21_5.Types.PacketCommonCustomReportDetails) | (MCProtocol.Pc_1_21_5.Types.PacketCommonServerLinks);
-	};
+	export type Packet = ({
+		name: "cookie_request";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonCookieRequest;
+	} | {
+		name: "custom_payload";
+		params: PacketCustomPayload;
+	} | {
+		name: "disconnect";
+		params: PacketDisconnect;
+	} | {
+		name: "finish_configuration";
+		params: PacketFinishConfiguration;
+	} | {
+		name: "keep_alive";
+		params: PacketKeepAlive;
+	} | {
+		name: "ping";
+		params: PacketPing;
+	} | {
+		name: "reset_chat";
+		params: PacketResetChat;
+	} | {
+		name: "registry_data";
+		params: PacketRegistryData;
+	} | {
+		name: "remove_resource_pack";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonRemoveResourcePack;
+	} | {
+		name: "add_resource_pack";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonAddResourcePack;
+	} | {
+		name: "store_cookie";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonStoreCookie;
+	} | {
+		name: "transfer";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonTransfer;
+	} | {
+		name: "feature_flags";
+		params: PacketFeatureFlags;
+	} | {
+		name: "tags";
+		params: PacketTags;
+	} | {
+		name: "select_known_packs";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonSelectKnownPacks;
+	} | {
+		name: "custom_report_details";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonCustomReportDetails;
+	} | {
+		name: "server_links";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonServerLinks;
+	});
 }
 
-export namespace MCProtocol.Pc_1_21_5.Config.Serverbound {
+export namespace MCProtocol.PC_1_21_5.Config.Serverbound {
 	export type PacketCustomPayload = {
 		channel: string;
-		data: MCProtocol.Pc_1_21_5.Types.RestBuffer;
+		data: Buffer;
 	};
-	export type PacketFinishConfiguration = {
-		
-	};
+	export type PacketFinishConfiguration = void;
 	export type PacketKeepAlive = {
 		keepAliveId: number;
 	};
@@ -826,64 +1308,122 @@ export namespace MCProtocol.Pc_1_21_5.Config.Serverbound {
 		id: number;
 	};
 	export type PacketResourcePackReceive = {
-		uuid: MCProtocol.Pc_1_21_5.Types.UUID;
+		uuid: MCProtocol.PC_1_21_5.Types.UUID;
 		result: number;
 	};
-	export type Packet = {
-		name: "settings" | "cookie_response" | "custom_payload" | "finish_configuration" | "keep_alive" | "pong" | "resource_pack_receive" | "select_known_packs" | "custom_report_details" | "server_links";
-		params: (MCProtocol.Pc_1_21_5.Types.PacketCommonSettings) | (MCProtocol.Pc_1_21_5.Types.PacketCommonCookieResponse) | (PacketCustomPayload) | (PacketFinishConfiguration) | (PacketKeepAlive) | (PacketPong) | (PacketResourcePackReceive) | (MCProtocol.Pc_1_21_5.Types.PacketCommonSelectKnownPacks) | (MCProtocol.Pc_1_21_5.Types.PacketCommonCustomReportDetails) | (MCProtocol.Pc_1_21_5.Types.PacketCommonServerLinks);
-	};
+	export type Packet = ({
+		name: "settings";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonSettings;
+	} | {
+		name: "cookie_response";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonCookieResponse;
+	} | {
+		name: "custom_payload";
+		params: PacketCustomPayload;
+	} | {
+		name: "finish_configuration";
+		params: PacketFinishConfiguration;
+	} | {
+		name: "keep_alive";
+		params: PacketKeepAlive;
+	} | {
+		name: "pong";
+		params: PacketPong;
+	} | {
+		name: "resource_pack_receive";
+		params: PacketResourcePackReceive;
+	} | {
+		name: "select_known_packs";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonSelectKnownPacks;
+	} | {
+		name: "custom_report_details";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonCustomReportDetails;
+	} | {
+		name: "server_links";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonServerLinks;
+	});
 }
 
-export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
-	export type SlotDisplay = {
-		type: "empty" | "any_fuel" | "item" | "item_stack" | "tag" | "smithing_trim" | "with_remainder" | "composite";
-		data: (undefined | null) | (undefined | null) | (number) | (MCProtocol.Pc_1_21_5.Types.Slot) | (string) | ({
+export namespace MCProtocol.PC_1_21_5.Play.Clientbound {
+	export type SlotDisplay = ({
+		type: "empty";
+		data: undefined;
+	} | {
+		type: "any_fuel";
+		data: undefined;
+	} | {
+		type: "item";
+		data: number;
+	} | {
+		type: "item_stack";
+		data: MCProtocol.PC_1_21_5.Types.Slot;
+	} | {
+		type: "tag";
+		data: string;
+	} | {
+		type: "smithing_trim";
+		data: {
 			base: SlotDisplay;
 			material: SlotDisplay;
-			pattern: `$$registryEntryHolder`;
-		}) | ({
+			pattern: {
+				patternId: number;
+			} | {
+				data: MCProtocol.PC_1_21_5.Types.ArmorTrimPattern;
+			};
+		};
+	} | {
+		type: "with_remainder";
+		data: {
 			input: SlotDisplay;
 			remainder: SlotDisplay;
-		}) | ((
-			SlotDisplay
-		)[]);
-	};
-	export type RecipeDisplay = {
-		type: "crafting_shapeless" | "crafting_shaped" | "furnace" | "stonecutter" | "smithing";
-		data: ({
-			ingredients: (
-				SlotDisplay
-			)[];
+		};
+	} | {
+		type: "composite";
+		data: SlotDisplay[];
+	});
+	export type RecipeDisplay = ({
+		type: "crafting_shapeless";
+		data: {
+			ingredients: SlotDisplay[];
 			result: SlotDisplay;
 			craftingStation: SlotDisplay;
-		}) | ({
+		};
+	} | {
+		type: "crafting_shaped";
+		data: {
 			width: number;
 			height: number;
-			ingredients: (
-				SlotDisplay
-			)[];
+			ingredients: SlotDisplay[];
 			result: SlotDisplay;
 			craftingStation: SlotDisplay;
-		}) | ({
+		};
+	} | {
+		type: "furnace";
+		data: {
 			ingredient: SlotDisplay;
 			fuel: SlotDisplay;
 			result: SlotDisplay;
 			craftingStation: SlotDisplay;
 			duration: number;
 			experience: number;
-		}) | ({
+		};
+	} | {
+		type: "stonecutter";
+		data: {
 			ingredient: SlotDisplay;
 			result: SlotDisplay;
 			craftingStation: SlotDisplay;
-		}) | ({
+		};
+	} | {
+		type: "smithing";
+		data: {
 			template: SlotDisplay;
 			base: SlotDisplay;
 			addition: SlotDisplay;
 			result: SlotDisplay;
 			craftingStation: SlotDisplay;
-		});
-	};
+		};
+	});
 	export type SpawnInfo = {
 		dimension: number;
 		name: string;
@@ -892,16 +1432,16 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		previousGamemode: number;
 		isDebug: boolean;
 		isFlat: boolean;
-		death: {
+		death?: {
 			dimensionName: string;
-			location: MCProtocol.Pc_1_21_5.Types.Position;
-		} | null | undefined;
+			location: MCProtocol.PC_1_21_5.Types.Position;
+		};
 		portalCooldown: number;
 		seaLevel: number;
 	};
 	export type PacketSpawnEntity = {
 		entityId: number;
-		objectUUID: MCProtocol.Pc_1_21_5.Types.UUID;
+		objectUUID: MCProtocol.PC_1_21_5.Types.UUID;
 		type: number;
 		x: number;
 		y: number;
@@ -919,46 +1459,68 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		animation: number;
 	};
 	export type PacketStatistics = {
-		entries: (
-			{
-				categoryId: number;
-				statisticId: number;
-				value: number;
-			}
-		)[];
+		entries: {
+			categoryId: number;
+			statisticId: number;
+			value: number;
+		}[];
 	};
 	export type PacketAcknowledgePlayerDigging = {
 		sequenceId: number;
 	};
 	export type PacketBlockBreakAnimation = {
 		entityId: number;
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		destroyStage: number;
 	};
 	export type PacketTileEntityData = {
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		action: number;
-		nbtData: MCProtocol.Pc_1_21_5.Types.AnonOptionalNbt;
+		nbtData?: NBT.Root;
 	};
 	export type PacketBlockAction = {
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		byte1: number;
 		byte2: number;
 		blockId: number;
 	};
 	export type PacketBlockChange = {
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		type: number;
 	};
 	export type PacketBossBar = {
-		entityUUID: MCProtocol.Pc_1_21_5.Types.UUID;
-		action: number;
-		title: (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (undefined | null);
-		health: (number) | (number) | (undefined | null);
-		color: (number) | (number) | (undefined | null);
-		dividers: (number) | (number) | (undefined | null);
-		flags: (number) | (number) | (undefined | null);
-	};
+		entityUUID: MCProtocol.PC_1_21_5.Types.UUID;
+	} & ({
+		action: 0;
+		title: NBT.Root;
+	} | {
+		action: 3;
+		title: NBT.Root;
+	} | {
+		action: 0;
+		health: number;
+	} | {
+		action: 2;
+		health: number;
+	} | {
+		action: 0;
+		color: number;
+	} | {
+		action: 4;
+		color: number;
+	} | {
+		action: 0;
+		dividers: number;
+	} | {
+		action: 4;
+		dividers: number;
+	} | {
+		action: 0;
+		flags: number;
+	} | {
+		action: 5;
+		flags: number;
+	});
 	export type PacketDifficulty = {
 		difficulty: number;
 		difficultyLocked: boolean;
@@ -966,16 +1528,12 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 	export type PacketChunkBatchFinished = {
 		batchSize: number;
 	};
-	export type PacketChunkBatchStart = {
-		
-	};
+	export type PacketChunkBatchStart = void;
 	export type PacketChunkBiomes = {
-		biomes: (
-			{
-				position: MCProtocol.Pc_1_21_5.Types.PackedChunkPos;
-				data: MCProtocol.Pc_1_21_5.Types.ByteArray;
-			}
-		)[];
+		biomes: {
+			position: MCProtocol.PC_1_21_5.Types.PackedChunkPos;
+			data: MCProtocol.PC_1_21_5.Types.ByteArray;
+		}[];
 	};
 	export type PacketClearTitles = {
 		reset: boolean;
@@ -984,40 +1542,34 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		transactionId: number;
 		start: number;
 		length: number;
-		matches: (
-			{
-				match: string;
-				tooltip: MCProtocol.Pc_1_21_5.Types.AnonymousNbt | null | undefined;
-			}
-		)[];
+		matches: {
+			match: string;
+			tooltip?: NBT.Root;
+		}[];
 	};
 	export type PacketDeclareCommands = {
-		nodes: (
-			MCProtocol.Pc_1_21_5.Types.CommandNode
-		)[];
+		nodes: MCProtocol.PC_1_21_5.Types.CommandNode[];
 		rootIndex: number;
 	};
 	export type PacketCloseWindow = {
-		windowId: MCProtocol.Pc_1_21_5.Types.ContainerID;
+		windowId: MCProtocol.PC_1_21_5.Types.ContainerID;
 	};
 	export type PacketWindowItems = {
-		windowId: MCProtocol.Pc_1_21_5.Types.ContainerID;
+		windowId: MCProtocol.PC_1_21_5.Types.ContainerID;
 		stateId: number;
-		items: (
-			MCProtocol.Pc_1_21_5.Types.Slot
-		)[];
-		carriedItem: MCProtocol.Pc_1_21_5.Types.Slot;
+		items: MCProtocol.PC_1_21_5.Types.Slot[];
+		carriedItem: MCProtocol.PC_1_21_5.Types.Slot;
 	};
 	export type PacketCraftProgressBar = {
-		windowId: MCProtocol.Pc_1_21_5.Types.ContainerID;
+		windowId: MCProtocol.PC_1_21_5.Types.ContainerID;
 		property: number;
 		value: number;
 	};
 	export type PacketSetSlot = {
-		windowId: MCProtocol.Pc_1_21_5.Types.ContainerID;
+		windowId: MCProtocol.PC_1_21_5.Types.ContainerID;
 		stateId: number;
 		slot: number;
-		item: MCProtocol.Pc_1_21_5.Types.Slot;
+		item: MCProtocol.PC_1_21_5.Types.Slot;
 	};
 	export type PacketSetCooldown = {
 		cooldownGroup: string;
@@ -1025,52 +1577,50 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 	};
 	export type PacketChatSuggestions = {
 		action: number;
-		entries: (
-			string
-		)[];
+		entries: string[];
 	};
 	export type PacketCustomPayload = {
 		channel: string;
-		data: MCProtocol.Pc_1_21_5.Types.RestBuffer;
+		data: Buffer;
 	};
 	export type PacketDamageEvent = {
 		entityId: number;
 		sourceTypeId: number;
 		sourceCauseId: number;
 		sourceDirectId: number;
-		sourcePosition: MCProtocol.Pc_1_21_5.Types.Vec3f64 | null | undefined;
+		sourcePosition?: MCProtocol.PC_1_21_5.Types.Vec3f64;
 	};
 	export type PacketDebugSample = {
-		sample: (
-			number
-		)[];
+		sample: number[];
 		type: number;
 	};
-	export type PacketHideMessage = {
-		id: number;
-		signature: (Buffer) | (undefined | null);
-	};
+	export type PacketHideMessage = ({
+		id: 0;
+		signature: Buffer;
+	});
 	export type PacketKickDisconnect = {
-		reason: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
+		reason: NBT.Root;
 	};
 	export type ChatTypeParameterType = "content" | "sender" | "target";
 	export type ChatType = {
 		translationKey: string;
-		parameters: (
-			ChatTypeParameterType
-		)[];
-		style: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
+		parameters: ChatTypeParameterType[];
+		style: NBT.Root;
 	};
 	export type ChatTypes = {
 		chat: ChatType;
 		narration: ChatType;
 	};
-	export type ChatTypesHolder = `$$registryEntryHolder`;
+	export type ChatTypesHolder = {
+		chatType: number;
+	} | {
+		data: ChatTypes;
+	};
 	export type PacketProfilelessChat = {
-		message: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
+		message: NBT.Root;
 		type: ChatTypesHolder;
-		name: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
-		target: MCProtocol.Pc_1_21_5.Types.AnonymousNbt | null | undefined;
+		name: NBT.Root;
+		target?: NBT.Root;
 	};
 	export type PacketEntityStatus = {
 		entityId: number;
@@ -1092,9 +1642,9 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		x: number;
 		y: number;
 		z: number;
-		playerKnockback: MCProtocol.Pc_1_21_5.Types.Vec3f | null | undefined;
-		explosionParticle: MCProtocol.Pc_1_21_5.Types.Particle;
-		sound: MCProtocol.Pc_1_21_5.Types.ItemSoundHolder;
+		playerKnockback?: MCProtocol.PC_1_21_5.Types.Vec3f;
+		explosionParticle: MCProtocol.PC_1_21_5.Types.Particle;
+		sound: MCProtocol.PC_1_21_5.Types.ItemSoundHolder;
 	};
 	export type PacketUnloadChunk = {
 		chunkZ: number;
@@ -1105,7 +1655,7 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		gameMode: number;
 	};
 	export type PacketOpenHorseWindow = {
-		windowId: MCProtocol.Pc_1_21_5.Types.ContainerID;
+		windowId: MCProtocol.PC_1_21_5.Types.ContainerID;
 		nbSlots: number;
 		entityId: number;
 	};
@@ -1129,44 +1679,22 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 	export type PacketMapChunk = {
 		x: number;
 		z: number;
-		heightmaps: (
-			{
-				type: number;
-				data: (
-					number
-				)[];
-			}
-		)[];
-		chunkData: MCProtocol.Pc_1_21_5.Types.ByteArray;
-		blockEntities: (
-			MCProtocol.Pc_1_21_5.Types.ChunkBlockEntity
-		)[];
-		skyLightMask: (
-			number
-		)[];
-		blockLightMask: (
-			number
-		)[];
-		emptySkyLightMask: (
-			number
-		)[];
-		emptyBlockLightMask: (
-			number
-		)[];
-		skyLight: (
-			(
-				number
-			)[]
-		)[];
-		blockLight: (
-			(
-				number
-			)[]
-		)[];
+		heightmaps: {
+			type: number;
+			data: number[];
+		}[];
+		chunkData: MCProtocol.PC_1_21_5.Types.ByteArray;
+		blockEntities: MCProtocol.PC_1_21_5.Types.ChunkBlockEntity[];
+		skyLightMask: number[];
+		blockLightMask: number[];
+		emptySkyLightMask: number[];
+		emptyBlockLightMask: number[];
+		skyLight: number[][];
+		blockLight: number[][];
 	};
 	export type PacketWorldEvent = {
 		effectId: number;
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		data: number;
 		global: boolean;
 	};
@@ -1181,40 +1709,22 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		offsetZ: number;
 		velocityOffset: number;
 		amount: number;
-		particle: MCProtocol.Pc_1_21_5.Types.Particle;
+		particle: MCProtocol.PC_1_21_5.Types.Particle;
 	};
 	export type PacketUpdateLight = {
 		chunkX: number;
 		chunkZ: number;
-		skyLightMask: (
-			number
-		)[];
-		blockLightMask: (
-			number
-		)[];
-		emptySkyLightMask: (
-			number
-		)[];
-		emptyBlockLightMask: (
-			number
-		)[];
-		skyLight: (
-			(
-				number
-			)[]
-		)[];
-		blockLight: (
-			(
-				number
-			)[]
-		)[];
+		skyLightMask: number[];
+		blockLightMask: number[];
+		emptySkyLightMask: number[];
+		emptyBlockLightMask: number[];
+		skyLight: number[][];
+		blockLight: number[][];
 	};
 	export type PacketLogin = {
 		entityId: number;
 		isHardcore: boolean;
-		worldNames: (
-			string
-		)[];
+		worldNames: string[];
 		maxPlayers: number;
 		viewDistance: number;
 		simulationDistance: number;
@@ -1228,45 +1738,60 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		itemDamage: number;
 		scale: number;
 		locked: boolean;
-		icons: (
-			{
-				type: number;
-				x: number;
-				z: number;
-				direction: number;
-				displayName: MCProtocol.Pc_1_21_5.Types.AnonymousNbt | null | undefined;
-			}
-		)[] | null | undefined;
-		columns: number;
-		rows: (undefined | null) | (number);
-		x: (undefined | null) | (number);
-		y: (undefined | null) | (number);
-		data: (undefined | null) | (Buffer);
-	};
+		icons?: {
+			type: number;
+			x: number;
+			z: number;
+			direction: number;
+			displayName?: NBT.Root;
+		}[];
+	} & ({
+		columns: 0;
+		rows: undefined;
+	} | {
+		columns: never;
+		rows: number;
+	} | {
+		columns: 0;
+		x: undefined;
+	} | {
+		columns: never;
+		x: number;
+	} | {
+		columns: 0;
+		y: undefined;
+	} | {
+		columns: never;
+		y: number;
+	} | {
+		columns: 0;
+		data: undefined;
+	} | {
+		columns: never;
+		data: Buffer;
+	});
 	export type PacketTradeList = {
-		windowId: MCProtocol.Pc_1_21_5.Types.ContainerID;
-		trades: (
-			{
-				inputItem1: {
-					itemId: number;
-					itemCount: number;
-					components: MCProtocol.Pc_1_21_5.Types.ExactComponentMatcher;
-				};
-				outputItem: MCProtocol.Pc_1_21_5.Types.Slot;
-				inputItem2: {
-					itemId: number;
-					itemCount: number;
-					components: MCProtocol.Pc_1_21_5.Types.ExactComponentMatcher;
-				} | null | undefined;
-				tradeDisabled: boolean;
-				nbTradeUses: number;
-				maximumNbTradeUses: number;
-				xp: number;
-				specialPrice: number;
-				priceMultiplier: number;
-				demand: number;
-			}
-		)[];
+		windowId: MCProtocol.PC_1_21_5.Types.ContainerID;
+		trades: {
+			inputItem1: {
+				itemId: number;
+				itemCount: number;
+				components: MCProtocol.PC_1_21_5.Types.ExactComponentMatcher;
+			};
+			outputItem: MCProtocol.PC_1_21_5.Types.Slot;
+			inputItem2?: {
+				itemId: number;
+				itemCount: number;
+				components: MCProtocol.PC_1_21_5.Types.ExactComponentMatcher;
+			};
+			tradeDisabled: boolean;
+			nbTradeUses: number;
+			maximumNbTradeUses: number;
+			xp: number;
+			specialPrice: number;
+			priceMultiplier: number;
+			demand: number;
+		}[];
 		villagerLevel: number;
 		experience: number;
 		isRegularVillager: boolean;
@@ -1290,15 +1815,13 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 	};
 	export type PacketMoveMinecart = {
 		entityId: number;
-		steps: (
-			{
-				position: MCProtocol.Pc_1_21_5.Types.Vec3f;
-				movement: MCProtocol.Pc_1_21_5.Types.Vec3f;
-				yaw: number;
-				pitch: number;
-				weight: number;
-			}
-		)[];
+		steps: {
+			position: MCProtocol.PC_1_21_5.Types.Vec3f;
+			movement: MCProtocol.PC_1_21_5.Types.Vec3f;
+			yaw: number;
+			pitch: number;
+			weight: number;
+		}[];
 	};
 	export type PacketEntityLook = {
 		entityId: number;
@@ -1319,10 +1842,10 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 	export type PacketOpenWindow = {
 		windowId: number;
 		inventoryType: number;
-		windowTitle: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
+		windowTitle: NBT.Root;
 	};
 	export type PacketOpenSignEntity = {
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		isFrontText: boolean;
 	};
 	export type PacketPing = {
@@ -1332,7 +1855,7 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		id: number;
 	};
 	export type PacketCraftRecipeResponse = {
-		windowId: MCProtocol.Pc_1_21_5.Types.ContainerID;
+		windowId: MCProtocol.PC_1_21_5.Types.ContainerID;
 		recipeDisplay: RecipeDisplay;
 	};
 	export type PacketAbilities = {
@@ -1342,36 +1865,31 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 	};
 	export type PacketPlayerChat = {
 		globalIndex: number;
-		senderUuid: MCProtocol.Pc_1_21_5.Types.UUID;
+		senderUuid: MCProtocol.PC_1_21_5.Types.UUID;
 		index: number;
-		signature: Buffer | null | undefined;
+		signature?: Buffer;
 		plainMessage: string;
 		timestamp: number;
 		salt: number;
-		previousMessages: MCProtocol.Pc_1_21_5.Types.PreviousMessages;
-		unsignedChatContent: MCProtocol.Pc_1_21_5.Types.AnonymousNbt | null | undefined;
-		filterType: number;
-		filterTypeMask: ((
-			number
-		)[]) | (undefined | null);
+		previousMessages: MCProtocol.PC_1_21_5.Types.PreviousMessages;
+		unsignedChatContent?: NBT.Root;
 		type: ChatTypesHolder;
-		networkName: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
-		networkTargetName: MCProtocol.Pc_1_21_5.Types.AnonymousNbt | null | undefined;
-	};
+		networkName: NBT.Root;
+		networkTargetName?: NBT.Root;
+	} & ({
+		filterType: 2;
+		filterTypeMask: number[];
+	});
 	export type PacketEndCombatEvent = {
 		duration: number;
 	};
-	export type PacketEnterCombatEvent = {
-		
-	};
+	export type PacketEnterCombatEvent = void;
 	export type PacketDeathCombatEvent = {
 		playerId: number;
-		message: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
+		message: NBT.Root;
 	};
 	export type PacketPlayerRemove = {
-		players: (
-			MCProtocol.Pc_1_21_5.Types.UUID
-		)[];
+		players: MCProtocol.PC_1_21_5.Types.UUID[];
 	};
 	export type PacketPlayerInfo = {
 		action: {
@@ -1384,29 +1902,46 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 			update_hat?: boolean;
 			update_list_order?: boolean;
 		};
-		data: (
-			{
-				uuid: MCProtocol.Pc_1_21_5.Types.UUID;
-				player: (MCProtocol.Pc_1_21_5.Types.GameProfile) | (undefined | null);
-				chatSession: (MCProtocol.Pc_1_21_5.Types.ChatSession) | (undefined | null);
-				gamemode: (number) | (undefined | null);
-				listed: (number) | (undefined | null);
-				latency: (number) | (undefined | null);
-				displayName: (MCProtocol.Pc_1_21_5.Types.AnonymousNbt | null | undefined) | (undefined | null);
-				listPriority: (number) | (undefined | null);
-				showHat: (boolean) | (undefined | null);
-			}
-		)[];
+		data: {
+			uuid: MCProtocol.PC_1_21_5.Types.UUID;
+		} & ({
+			../action/add_player: true;
+			player: MCProtocol.PC_1_21_5.Types.GameProfile;
+		}) & ({
+			../action/initialize_chat: true;
+			chatSession: MCProtocol.PC_1_21_5.Types.ChatSession;
+		}) & ({
+			../action/update_game_mode: true;
+			gamemode: number;
+		}) & ({
+			../action/update_listed: true;
+			listed: number;
+		}) & ({
+			../action/update_latency: true;
+			latency: number;
+		}) & ({
+			../action/update_display_name: true;
+			displayName?: NBT.Root;
+		}) & ({
+			../action/update_list_order: true;
+			listPriority: number;
+		}) & ({
+			../action/update_hat: true;
+			showHat: boolean;
+		})[];
 	};
 	export type PacketFacePlayer = {
 		feet_eyes: number;
 		x: number;
 		y: number;
 		z: number;
-		isEntity: boolean;
-		entityId: (number) | (undefined | null);
-		entity_feet_eyes: (number) | (undefined | null);
-	};
+	} & ({
+		isEntity: true;
+		entityId: number;
+	} | {
+		isEntity: true;
+		entity_feet_eyes: number;
+	});
 	export type PositionUpdateRelatives = {
 		x?: boolean;
 		y?: boolean;
@@ -1435,29 +1970,23 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		pitch: number;
 	};
 	export type PacketRecipeBookAdd = {
-		entries: (
-			{
-				recipe: {
-					displayId: number;
-					display: RecipeDisplay;
-					group: MCProtocol.Pc_1_21_5.Types.Optvarint;
-					category: "crafting_building_blocks" | "crafting_redstone" | "crafting_equipment" | "crafting_misc" | "furnace_food" | "furnace_blocks" | "furnace_misc" | "blast_furnace_blocks" | "blast_furnace_misc" | "smoker_food" | "stonecutter" | "smithing" | "campfire";
-					craftingRequirements: (
-						MCProtocol.Pc_1_21_5.Types.IDSet
-					)[] | null | undefined;
-				};
-				flags: {
-					notification?: boolean;
-					highlight?: boolean;
-				};
-			}
-		)[];
+		entries: {
+			recipe: {
+				displayId: number;
+				display: RecipeDisplay;
+				group: MCProtocol.PC_1_21_5.Types.Optvarint;
+				category: "crafting_building_blocks" | "crafting_redstone" | "crafting_equipment" | "crafting_misc" | "furnace_food" | "furnace_blocks" | "furnace_misc" | "blast_furnace_blocks" | "blast_furnace_misc" | "smoker_food" | "stonecutter" | "smithing" | "campfire";
+				craftingRequirements?: MCProtocol.PC_1_21_5.Types.IDSet[];
+			};
+			flags: {
+				notification?: boolean;
+				highlight?: boolean;
+			};
+		}[];
 		replace: boolean;
 	};
 	export type PacketRecipeBookRemove = {
-		recipeIds: (
-			number
-		)[];
+		recipeIds: number[];
 	};
 	export type PacketRecipeBookSettings = {
 		craftingGuiOpen: boolean;
@@ -1470,9 +1999,7 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		smokerFilteringCraftable: boolean;
 	};
 	export type PacketEntityDestroy = {
-		entityIds: (
-			number
-		)[];
+		entityIds: number[];
 	};
 	export type PacketRemoveEntityEffect = {
 		entityId: number;
@@ -1480,7 +2007,7 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 	};
 	export type PacketResetScore = {
 		entity_name: string;
-		objective_name: string | null | undefined;
+		objective_name?: string;
 	};
 	export type PacketRespawn = {
 		worldState: SpawnInfo;
@@ -1496,19 +2023,17 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 			z?: boolean;
 			y?: boolean;
 		};
-		records: (
-			number
-		)[];
+		records: number[];
 	};
 	export type PacketSelectAdvancementTab = {
-		id: string | null | undefined;
+		id?: string;
 	};
 	export type PacketServerData = {
-		motd: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
-		iconBytes: MCProtocol.Pc_1_21_5.Types.ByteArray | null | undefined;
+		motd: NBT.Root;
+		iconBytes?: MCProtocol.PC_1_21_5.Types.ByteArray;
 	};
 	export type PacketActionBar = {
-		text: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
+		text: NBT.Root;
 	};
 	export type PacketWorldBorderCenter = {
 		x: number;
@@ -1539,10 +2064,10 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		viewDistance: number;
 	};
 	export type PacketSetCursorItem = {
-		contents: MCProtocol.Pc_1_21_5.Types.Slot;
+		contents: MCProtocol.PC_1_21_5.Types.Slot;
 	};
 	export type PacketSpawnPosition = {
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		angle: number;
 	};
 	export type PacketScoreboardDisplayObjective = {
@@ -1551,7 +2076,7 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 	};
 	export type PacketEntityMetadata = {
 		entityId: number;
-		metadata: MCProtocol.Pc_1_21_5.Types.EntityMetadata;
+		metadata: MCProtocol.PC_1_21_5.Types.EntityMetadata;
 	};
 	export type PacketAttachEntity = {
 		entityId: number;
@@ -1582,53 +2107,110 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 	};
 	export type PacketScoreboardObjective = {
 		name: string;
-		action: number;
-		displayText: (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (undefined | null);
-		type: (number) | (number) | (undefined | null);
-		number_format: (number | null | undefined) | (number | null | undefined) | (undefined | null);
-		styling: ((MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (undefined | null)) | ((MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (undefined | null)) | (undefined | null);
-	};
+	} & ({
+		action: 0;
+		displayText: NBT.Root;
+	} | {
+		action: 2;
+		displayText: NBT.Root;
+	} | {
+		action: 0;
+		type: number;
+	} | {
+		action: 2;
+		type: number;
+	} | {
+		action: 0;
+		number_format?: number;
+	} | {
+		action: 2;
+		number_format?: number;
+	} | {
+		action: 0;
+		styling: If<"number_format", "1", NBT.Root> | If<"number_format", "2", NBT.Root>;
+	} | {
+		action: 2;
+		styling: If<"number_format", "1", NBT.Root> | If<"number_format", "2", NBT.Root>;
+	});
 	export type PacketSetPassengers = {
 		entityId: number;
-		passengers: (
-			number
-		)[];
+		passengers: number[];
 	};
 	export type PacketSetPlayerInventory = {
 		slotId: number;
-		contents: MCProtocol.Pc_1_21_5.Types.Slot;
+		contents: MCProtocol.PC_1_21_5.Types.Slot;
 	};
 	export type PacketTeams = {
 		team: string;
-		mode: number;
-		name: (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (undefined | null);
-		friendlyFire: (number) | (number) | (undefined | null);
-		nameTagVisibility: (number) | (number) | (undefined | null);
-		collisionRule: (number) | (number) | (undefined | null);
-		formatting: (number) | (number) | (undefined | null);
-		prefix: (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (undefined | null);
-		suffix: (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (undefined | null);
-		players: ((
-			string
-		)[]) | ((
-			string
-		)[]) | ((
-			string
-		)[]) | (undefined | null);
-	};
+	} & ({
+		mode: 0;
+		name: NBT.Root;
+	} | {
+		mode: 2;
+		name: NBT.Root;
+	} | {
+		mode: 0;
+		friendlyFire: number;
+	} | {
+		mode: 2;
+		friendlyFire: number;
+	} | {
+		mode: 0;
+		nameTagVisibility: number;
+	} | {
+		mode: 2;
+		nameTagVisibility: number;
+	} | {
+		mode: 0;
+		collisionRule: number;
+	} | {
+		mode: 2;
+		collisionRule: number;
+	} | {
+		mode: 0;
+		formatting: number;
+	} | {
+		mode: 2;
+		formatting: number;
+	} | {
+		mode: 0;
+		prefix: NBT.Root;
+	} | {
+		mode: 2;
+		prefix: NBT.Root;
+	} | {
+		mode: 0;
+		suffix: NBT.Root;
+	} | {
+		mode: 2;
+		suffix: NBT.Root;
+	} | {
+		mode: 0;
+		players: string[];
+	} | {
+		mode: 3;
+		players: string[];
+	} | {
+		mode: 4;
+		players: string[];
+	});
 	export type PacketScoreboardScore = {
 		itemName: string;
 		scoreName: string;
 		value: number;
-		display_name: MCProtocol.Pc_1_21_5.Types.AnonymousNbt | null | undefined;
-		number_format: number | null | undefined;
-		styling: (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (MCProtocol.Pc_1_21_5.Types.AnonymousNbt) | (undefined | null);
-	};
+		display_name?: NBT.Root;
+	} & ({
+		number_format: 1;
+		styling: NBT.Root;
+	} | {
+		number_format: 2;
+		styling: NBT.Root;
+	});
 	export type PacketSimulationDistance = {
 		distance: number;
 	};
 	export type PacketSetTitleSubtitle = {
-		text: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
+		text: NBT.Root;
 	};
 	export type PacketUpdateTime = {
 		age: number;
@@ -1636,7 +2218,7 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		tickDayTime: boolean;
 	};
 	export type PacketSetTitleText = {
-		text: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
+		text: NBT.Root;
 	};
 	export type PacketSetTitleTime = {
 		fadeIn: number;
@@ -1644,16 +2226,16 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		fadeOut: number;
 	};
 	export type PacketEntitySoundEffect = {
-		sound: MCProtocol.Pc_1_21_5.Types.ItemSoundHolder;
-		soundCategory: MCProtocol.Pc_1_21_5.Types.SoundSource;
+		sound: MCProtocol.PC_1_21_5.Types.ItemSoundHolder;
+		soundCategory: MCProtocol.PC_1_21_5.Types.SoundSource;
 		entityId: number;
 		volume: number;
 		pitch: number;
 		seed: number;
 	};
 	export type PacketSoundEffect = {
-		sound: MCProtocol.Pc_1_21_5.Types.ItemSoundHolder;
-		soundCategory: MCProtocol.Pc_1_21_5.Types.SoundSource;
+		sound: MCProtocol.PC_1_21_5.Types.ItemSoundHolder;
+		soundCategory: MCProtocol.PC_1_21_5.Types.SoundSource;
 		x: number;
 		y: number;
 		z: number;
@@ -1661,25 +2243,31 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		pitch: number;
 		seed: number;
 	};
-	export type PacketStartConfiguration = {
-		
-	};
-	export type PacketStopSound = {
-		flags: number;
-		source: (number) | (number) | (undefined | null);
-		sound: (string) | (string) | (undefined | null);
-	};
+	export type PacketStartConfiguration = void;
+	export type PacketStopSound = ({
+		flags: 1;
+		source: number;
+	} | {
+		flags: 3;
+		source: number;
+	} | {
+		flags: 2;
+		sound: string;
+	} | {
+		flags: 3;
+		sound: string;
+	});
 	export type PacketSystemChat = {
-		content: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
+		content: NBT.Root;
 		isActionBar: boolean;
 	};
 	export type PacketPlayerlistHeader = {
-		header: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
-		footer: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
+		header: NBT.Root;
+		footer: NBT.Root;
 	};
 	export type PacketNbtQueryResponse = {
 		transactionId: number;
-		nbt: MCProtocol.Pc_1_21_5.Types.AnonOptionalNbt;
+		nbt?: NBT.Root;
 	};
 	export type PacketCollect = {
 		collectedEntityId: number;
@@ -1696,8 +2284,8 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		onGround: boolean;
 	};
 	export type PacketTestInstanceBlockStatus = {
-		status: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
-		size: MCProtocol.Pc_1_21_5.Types.Vec3i | null | undefined;
+		status: NBT.Root;
+		size?: MCProtocol.PC_1_21_5.Types.Vec3i;
 	};
 	export type PacketSetTickingState = {
 		tick_rate: number;
@@ -1708,66 +2296,52 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 	};
 	export type PacketAdvancements = {
 		reset: boolean;
-		advancementMapping: (
-			{
-				key: string;
-				value: {
-					parentId: string | null | undefined;
-					displayData: {
-						title: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
-						description: MCProtocol.Pc_1_21_5.Types.AnonymousNbt;
-						icon: MCProtocol.Pc_1_21_5.Types.Slot;
-						frameType: number;
-						flags: {
-							unused?: boolean;
-							hidden?: boolean;
-							show_toast?: boolean;
-							has_background_texture?: boolean;
-						};
-						backgroundTexture: (string) | (undefined | null);
-						xCord: number;
-						yCord: number;
-					} | null | undefined;
-					requirements: (
-						(
-							string
-						)[]
-					)[];
-					sendsTelemtryData: boolean;
-				};
-			}
-		)[];
-		identifiers: (
-			string
-		)[];
-		progressMapping: (
-			{
-				key: string;
-				value: (
-					{
-						criterionIdentifier: string;
-						criterionProgress: number | null | undefined;
-					}
-				)[];
-			}
-		)[];
+		advancementMapping: {
+			key: string;
+			value: {
+				parentId?: string;
+				displayData?: {
+					title: NBT.Root;
+					description: NBT.Root;
+					icon: MCProtocol.PC_1_21_5.Types.Slot;
+					frameType: number;
+					flags: {
+						unused?: boolean;
+						hidden?: boolean;
+						show_toast?: boolean;
+						has_background_texture?: boolean;
+					};
+					xCord: number;
+					yCord: number;
+				} & ({
+					flags/has_background_texture: 1;
+					backgroundTexture: string;
+				});
+				requirements: string[][];
+				sendsTelemtryData: boolean;
+			};
+		}[];
+		identifiers: string[];
+		progressMapping: {
+			key: string;
+			value: {
+				criterionIdentifier: string;
+				criterionProgress?: number;
+			}[];
+		}[];
 		showAdvancements: boolean;
 	};
 	export type PacketEntityUpdateAttributes = {
 		entityId: number;
-		properties: (
-			{
-				key: "generic.armor" | "generic.armor_toughness" | "generic.attack_damage" | "generic.attack_knockback" | "generic.attack_speed" | "player.block_break_speed" | "player.block_interaction_range" | "player.entity_interaction_range" | "generic.fall_damage_multiplier" | "generic.flying_speed" | "generic.follow_range" | "generic.gravity" | "generic.jump_strength" | "generic.knockback_resistance" | "generic.luck" | "generic.max_absorption" | "generic.max_health" | "generic.movement_speed" | "generic.safe_fall_distance" | "generic.scale" | "zombie.spawn_reinforcements" | "generic.step_height";
-				value: number;
-				modifiers: (
-					{
-						uuid: string;
-						amount: number;
-						operation: number;
-					}
-				)[];
-			}
-		)[];
+		properties: {
+			key: "generic.armor" | "generic.armor_toughness" | "generic.attack_damage" | "generic.attack_knockback" | "generic.attack_speed" | "player.block_break_speed" | "player.block_interaction_range" | "player.entity_interaction_range" | "generic.fall_damage_multiplier" | "generic.flying_speed" | "generic.follow_range" | "generic.gravity" | "generic.jump_strength" | "generic.knockback_resistance" | "generic.luck" | "generic.max_absorption" | "generic.max_health" | "generic.movement_speed" | "generic.safe_fall_distance" | "generic.scale" | "zombie.spawn_reinforcements" | "generic.step_height";
+			value: number;
+			modifiers: {
+				uuid: string;
+				amount: number;
+				operation: number;
+			}[];
+		}[];
 	};
 	export type PacketEntityEffect = {
 		entityId: number;
@@ -1777,46 +2351,428 @@ export namespace MCProtocol.Pc_1_21_5.Play.Clientbound {
 		flags: number;
 	};
 	export type PacketDeclareRecipes = {
-		recipes: (
-			{
-				name: string;
-				items: (
-					number
-				)[];
-			}
-		)[];
-		stoneCutterRecipes: (
-			{
-				input: MCProtocol.Pc_1_21_5.Types.IDSet;
-				slotDisplay: SlotDisplay;
-			}
-		)[];
+		recipes: {
+			name: string;
+			items: number[];
+		}[];
+		stoneCutterRecipes: {
+			input: MCProtocol.PC_1_21_5.Types.IDSet;
+			slotDisplay: SlotDisplay;
+		}[];
 	};
 	export type PacketTags = {
-		tags: (
-			{
-				tagType: string;
-				tags: MCProtocol.Pc_1_21_5.Types.Tags;
-			}
-		)[];
+		tags: {
+			tagType: string;
+			tags: MCProtocol.PC_1_21_5.Types.Tags;
+		}[];
 	};
 	export type PacketSetProjectilePower = {
 		id: number;
 		accelerationPower: number;
 	};
-	export type Packet = {
-		name: "bundle_delimiter" | "spawn_entity" | "animation" | "statistics" | "acknowledge_player_digging" | "block_break_animation" | "tile_entity_data" | "block_action" | "block_change" | "boss_bar" | "difficulty" | "chunk_batch_finished" | "chunk_batch_start" | "chunk_biomes" | "clear_titles" | "tab_complete" | "declare_commands" | "close_window" | "window_items" | "craft_progress_bar" | "set_slot" | "cookie_request" | "set_cooldown" | "chat_suggestions" | "custom_payload" | "damage_event" | "debug_sample" | "hide_message" | "kick_disconnect" | "profileless_chat" | "entity_status" | "sync_entity_position" | "explosion" | "unload_chunk" | "game_state_change" | "open_horse_window" | "hurt_animation" | "initialize_world_border" | "keep_alive" | "map_chunk" | "world_event" | "world_particles" | "update_light" | "login" | "map" | "trade_list" | "rel_entity_move" | "entity_move_look" | "move_minecart" | "entity_look" | "vehicle_move" | "open_book" | "open_window" | "open_sign_entity" | "ping" | "ping_response" | "craft_recipe_response" | "abilities" | "player_chat" | "end_combat_event" | "enter_combat_event" | "death_combat_event" | "player_remove" | "player_info" | "face_player" | "position" | "player_rotation" | "recipe_book_add" | "recipe_book_remove" | "recipe_book_settings" | "entity_destroy" | "remove_entity_effect" | "reset_score" | "remove_resource_pack" | "add_resource_pack" | "respawn" | "entity_head_rotation" | "multi_block_change" | "select_advancement_tab" | "server_data" | "action_bar" | "world_border_center" | "world_border_lerp_size" | "world_border_size" | "world_border_warning_delay" | "world_border_warning_reach" | "camera" | "update_view_position" | "update_view_distance" | "set_cursor_item" | "spawn_position" | "scoreboard_display_objective" | "entity_metadata" | "attach_entity" | "entity_velocity" | "entity_equipment" | "experience" | "update_health" | "held_item_slot" | "scoreboard_objective" | "set_passengers" | "set_player_inventory" | "teams" | "scoreboard_score" | "simulation_distance" | "set_title_subtitle" | "update_time" | "set_title_text" | "set_title_time" | "entity_sound_effect" | "sound_effect" | "start_configuration" | "stop_sound" | "store_cookie" | "system_chat" | "playerlist_header" | "nbt_query_response" | "collect" | "entity_teleport" | "test_instance_block_status" | "set_ticking_state" | "step_tick" | "transfer" | "advancements" | "entity_update_attributes" | "entity_effect" | "declare_recipes" | "tags" | "set_projectile_power" | "custom_report_details" | "server_links";
-		params: (undefined | null) | (PacketSpawnEntity) | (PacketAnimation) | (PacketStatistics) | (PacketAcknowledgePlayerDigging) | (PacketBlockBreakAnimation) | (PacketTileEntityData) | (PacketBlockAction) | (PacketBlockChange) | (PacketBossBar) | (PacketDifficulty) | (PacketChunkBatchFinished) | (PacketChunkBatchStart) | (PacketChunkBiomes) | (PacketClearTitles) | (PacketTabComplete) | (PacketDeclareCommands) | (PacketCloseWindow) | (PacketWindowItems) | (PacketCraftProgressBar) | (PacketSetSlot) | (MCProtocol.Pc_1_21_5.Types.PacketCommonCookieRequest) | (PacketSetCooldown) | (PacketChatSuggestions) | (PacketCustomPayload) | (PacketDamageEvent) | (PacketDebugSample) | (PacketHideMessage) | (PacketKickDisconnect) | (PacketProfilelessChat) | (PacketEntityStatus) | (PacketSyncEntityPosition) | (PacketExplosion) | (PacketUnloadChunk) | (PacketGameStateChange) | (PacketOpenHorseWindow) | (PacketHurtAnimation) | (PacketInitializeWorldBorder) | (PacketKeepAlive) | (PacketMapChunk) | (PacketWorldEvent) | (PacketWorldParticles) | (PacketUpdateLight) | (PacketLogin) | (PacketMap) | (PacketTradeList) | (PacketRelEntityMove) | (PacketEntityMoveLook) | (PacketMoveMinecart) | (PacketEntityLook) | (PacketVehicleMove) | (PacketOpenBook) | (PacketOpenWindow) | (PacketOpenSignEntity) | (PacketPing) | (PacketPingResponse) | (PacketCraftRecipeResponse) | (PacketAbilities) | (PacketPlayerChat) | (PacketEndCombatEvent) | (PacketEnterCombatEvent) | (PacketDeathCombatEvent) | (PacketPlayerRemove) | (PacketPlayerInfo) | (PacketFacePlayer) | (PacketPosition) | (PacketPlayerRotation) | (PacketRecipeBookAdd) | (PacketRecipeBookRemove) | (PacketRecipeBookSettings) | (PacketEntityDestroy) | (PacketRemoveEntityEffect) | (PacketResetScore) | (MCProtocol.Pc_1_21_5.Types.PacketCommonRemoveResourcePack) | (MCProtocol.Pc_1_21_5.Types.PacketCommonAddResourcePack) | (PacketRespawn) | (PacketEntityHeadRotation) | (PacketMultiBlockChange) | (PacketSelectAdvancementTab) | (PacketServerData) | (PacketActionBar) | (PacketWorldBorderCenter) | (PacketWorldBorderLerpSize) | (PacketWorldBorderSize) | (PacketWorldBorderWarningDelay) | (PacketWorldBorderWarningReach) | (PacketCamera) | (PacketUpdateViewPosition) | (PacketUpdateViewDistance) | (PacketSetCursorItem) | (PacketHeldItemSlot) | (PacketSpawnPosition) | (PacketScoreboardDisplayObjective) | (PacketEntityMetadata) | (PacketAttachEntity) | (PacketEntityVelocity) | (PacketEntityEquipment) | (PacketExperience) | (PacketUpdateHealth) | (PacketScoreboardObjective) | (PacketSetPassengers) | (PacketSetPlayerInventory) | (PacketTeams) | (PacketScoreboardScore) | (PacketSimulationDistance) | (PacketSetTitleSubtitle) | (PacketUpdateTime) | (PacketSetTitleText) | (PacketSetTitleTime) | (PacketEntitySoundEffect) | (PacketSoundEffect) | (PacketStartConfiguration) | (PacketStopSound) | (MCProtocol.Pc_1_21_5.Types.PacketCommonStoreCookie) | (PacketSystemChat) | (PacketPlayerlistHeader) | (PacketNbtQueryResponse) | (PacketCollect) | (PacketEntityTeleport) | (PacketTestInstanceBlockStatus) | (PacketSetTickingState) | (PacketStepTick) | (MCProtocol.Pc_1_21_5.Types.PacketCommonTransfer) | (PacketAdvancements) | (PacketEntityUpdateAttributes) | (PacketEntityEffect) | (PacketDeclareRecipes) | (PacketTags) | (PacketSetProjectilePower) | (MCProtocol.Pc_1_21_5.Types.PacketCommonCustomReportDetails) | (MCProtocol.Pc_1_21_5.Types.PacketCommonServerLinks);
-	};
+	export type Packet = ({
+		name: "bundle_delimiter";
+		params: undefined;
+	} | {
+		name: "spawn_entity";
+		params: PacketSpawnEntity;
+	} | {
+		name: "animation";
+		params: PacketAnimation;
+	} | {
+		name: "statistics";
+		params: PacketStatistics;
+	} | {
+		name: "acknowledge_player_digging";
+		params: PacketAcknowledgePlayerDigging;
+	} | {
+		name: "block_break_animation";
+		params: PacketBlockBreakAnimation;
+	} | {
+		name: "tile_entity_data";
+		params: PacketTileEntityData;
+	} | {
+		name: "block_action";
+		params: PacketBlockAction;
+	} | {
+		name: "block_change";
+		params: PacketBlockChange;
+	} | {
+		name: "boss_bar";
+		params: PacketBossBar;
+	} | {
+		name: "difficulty";
+		params: PacketDifficulty;
+	} | {
+		name: "chunk_batch_finished";
+		params: PacketChunkBatchFinished;
+	} | {
+		name: "chunk_batch_start";
+		params: PacketChunkBatchStart;
+	} | {
+		name: "chunk_biomes";
+		params: PacketChunkBiomes;
+	} | {
+		name: "clear_titles";
+		params: PacketClearTitles;
+	} | {
+		name: "tab_complete";
+		params: PacketTabComplete;
+	} | {
+		name: "declare_commands";
+		params: PacketDeclareCommands;
+	} | {
+		name: "close_window";
+		params: PacketCloseWindow;
+	} | {
+		name: "window_items";
+		params: PacketWindowItems;
+	} | {
+		name: "craft_progress_bar";
+		params: PacketCraftProgressBar;
+	} | {
+		name: "set_slot";
+		params: PacketSetSlot;
+	} | {
+		name: "cookie_request";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonCookieRequest;
+	} | {
+		name: "set_cooldown";
+		params: PacketSetCooldown;
+	} | {
+		name: "chat_suggestions";
+		params: PacketChatSuggestions;
+	} | {
+		name: "custom_payload";
+		params: PacketCustomPayload;
+	} | {
+		name: "damage_event";
+		params: PacketDamageEvent;
+	} | {
+		name: "debug_sample";
+		params: PacketDebugSample;
+	} | {
+		name: "hide_message";
+		params: PacketHideMessage;
+	} | {
+		name: "kick_disconnect";
+		params: PacketKickDisconnect;
+	} | {
+		name: "profileless_chat";
+		params: PacketProfilelessChat;
+	} | {
+		name: "entity_status";
+		params: PacketEntityStatus;
+	} | {
+		name: "sync_entity_position";
+		params: PacketSyncEntityPosition;
+	} | {
+		name: "explosion";
+		params: PacketExplosion;
+	} | {
+		name: "unload_chunk";
+		params: PacketUnloadChunk;
+	} | {
+		name: "game_state_change";
+		params: PacketGameStateChange;
+	} | {
+		name: "open_horse_window";
+		params: PacketOpenHorseWindow;
+	} | {
+		name: "hurt_animation";
+		params: PacketHurtAnimation;
+	} | {
+		name: "initialize_world_border";
+		params: PacketInitializeWorldBorder;
+	} | {
+		name: "keep_alive";
+		params: PacketKeepAlive;
+	} | {
+		name: "map_chunk";
+		params: PacketMapChunk;
+	} | {
+		name: "world_event";
+		params: PacketWorldEvent;
+	} | {
+		name: "world_particles";
+		params: PacketWorldParticles;
+	} | {
+		name: "update_light";
+		params: PacketUpdateLight;
+	} | {
+		name: "login";
+		params: PacketLogin;
+	} | {
+		name: "map";
+		params: PacketMap;
+	} | {
+		name: "trade_list";
+		params: PacketTradeList;
+	} | {
+		name: "rel_entity_move";
+		params: PacketRelEntityMove;
+	} | {
+		name: "entity_move_look";
+		params: PacketEntityMoveLook;
+	} | {
+		name: "move_minecart";
+		params: PacketMoveMinecart;
+	} | {
+		name: "entity_look";
+		params: PacketEntityLook;
+	} | {
+		name: "vehicle_move";
+		params: PacketVehicleMove;
+	} | {
+		name: "open_book";
+		params: PacketOpenBook;
+	} | {
+		name: "open_window";
+		params: PacketOpenWindow;
+	} | {
+		name: "open_sign_entity";
+		params: PacketOpenSignEntity;
+	} | {
+		name: "ping";
+		params: PacketPing;
+	} | {
+		name: "ping_response";
+		params: PacketPingResponse;
+	} | {
+		name: "craft_recipe_response";
+		params: PacketCraftRecipeResponse;
+	} | {
+		name: "abilities";
+		params: PacketAbilities;
+	} | {
+		name: "player_chat";
+		params: PacketPlayerChat;
+	} | {
+		name: "end_combat_event";
+		params: PacketEndCombatEvent;
+	} | {
+		name: "enter_combat_event";
+		params: PacketEnterCombatEvent;
+	} | {
+		name: "death_combat_event";
+		params: PacketDeathCombatEvent;
+	} | {
+		name: "player_remove";
+		params: PacketPlayerRemove;
+	} | {
+		name: "player_info";
+		params: PacketPlayerInfo;
+	} | {
+		name: "face_player";
+		params: PacketFacePlayer;
+	} | {
+		name: "position";
+		params: PacketPosition;
+	} | {
+		name: "player_rotation";
+		params: PacketPlayerRotation;
+	} | {
+		name: "recipe_book_add";
+		params: PacketRecipeBookAdd;
+	} | {
+		name: "recipe_book_remove";
+		params: PacketRecipeBookRemove;
+	} | {
+		name: "recipe_book_settings";
+		params: PacketRecipeBookSettings;
+	} | {
+		name: "entity_destroy";
+		params: PacketEntityDestroy;
+	} | {
+		name: "remove_entity_effect";
+		params: PacketRemoveEntityEffect;
+	} | {
+		name: "reset_score";
+		params: PacketResetScore;
+	} | {
+		name: "remove_resource_pack";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonRemoveResourcePack;
+	} | {
+		name: "add_resource_pack";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonAddResourcePack;
+	} | {
+		name: "respawn";
+		params: PacketRespawn;
+	} | {
+		name: "entity_head_rotation";
+		params: PacketEntityHeadRotation;
+	} | {
+		name: "multi_block_change";
+		params: PacketMultiBlockChange;
+	} | {
+		name: "select_advancement_tab";
+		params: PacketSelectAdvancementTab;
+	} | {
+		name: "server_data";
+		params: PacketServerData;
+	} | {
+		name: "action_bar";
+		params: PacketActionBar;
+	} | {
+		name: "world_border_center";
+		params: PacketWorldBorderCenter;
+	} | {
+		name: "world_border_lerp_size";
+		params: PacketWorldBorderLerpSize;
+	} | {
+		name: "world_border_size";
+		params: PacketWorldBorderSize;
+	} | {
+		name: "world_border_warning_delay";
+		params: PacketWorldBorderWarningDelay;
+	} | {
+		name: "world_border_warning_reach";
+		params: PacketWorldBorderWarningReach;
+	} | {
+		name: "camera";
+		params: PacketCamera;
+	} | {
+		name: "update_view_position";
+		params: PacketUpdateViewPosition;
+	} | {
+		name: "update_view_distance";
+		params: PacketUpdateViewDistance;
+	} | {
+		name: "set_cursor_item";
+		params: PacketSetCursorItem;
+	} | {
+		name: "held_item_slot";
+		params: PacketHeldItemSlot;
+	} | {
+		name: "spawn_position";
+		params: PacketSpawnPosition;
+	} | {
+		name: "scoreboard_display_objective";
+		params: PacketScoreboardDisplayObjective;
+	} | {
+		name: "entity_metadata";
+		params: PacketEntityMetadata;
+	} | {
+		name: "attach_entity";
+		params: PacketAttachEntity;
+	} | {
+		name: "entity_velocity";
+		params: PacketEntityVelocity;
+	} | {
+		name: "entity_equipment";
+		params: PacketEntityEquipment;
+	} | {
+		name: "experience";
+		params: PacketExperience;
+	} | {
+		name: "update_health";
+		params: PacketUpdateHealth;
+	} | {
+		name: "scoreboard_objective";
+		params: PacketScoreboardObjective;
+	} | {
+		name: "set_passengers";
+		params: PacketSetPassengers;
+	} | {
+		name: "set_player_inventory";
+		params: PacketSetPlayerInventory;
+	} | {
+		name: "teams";
+		params: PacketTeams;
+	} | {
+		name: "scoreboard_score";
+		params: PacketScoreboardScore;
+	} | {
+		name: "simulation_distance";
+		params: PacketSimulationDistance;
+	} | {
+		name: "set_title_subtitle";
+		params: PacketSetTitleSubtitle;
+	} | {
+		name: "update_time";
+		params: PacketUpdateTime;
+	} | {
+		name: "set_title_text";
+		params: PacketSetTitleText;
+	} | {
+		name: "set_title_time";
+		params: PacketSetTitleTime;
+	} | {
+		name: "entity_sound_effect";
+		params: PacketEntitySoundEffect;
+	} | {
+		name: "sound_effect";
+		params: PacketSoundEffect;
+	} | {
+		name: "start_configuration";
+		params: PacketStartConfiguration;
+	} | {
+		name: "stop_sound";
+		params: PacketStopSound;
+	} | {
+		name: "store_cookie";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonStoreCookie;
+	} | {
+		name: "system_chat";
+		params: PacketSystemChat;
+	} | {
+		name: "playerlist_header";
+		params: PacketPlayerlistHeader;
+	} | {
+		name: "nbt_query_response";
+		params: PacketNbtQueryResponse;
+	} | {
+		name: "collect";
+		params: PacketCollect;
+	} | {
+		name: "entity_teleport";
+		params: PacketEntityTeleport;
+	} | {
+		name: "test_instance_block_status";
+		params: PacketTestInstanceBlockStatus;
+	} | {
+		name: "set_ticking_state";
+		params: PacketSetTickingState;
+	} | {
+		name: "step_tick";
+		params: PacketStepTick;
+	} | {
+		name: "transfer";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonTransfer;
+	} | {
+		name: "advancements";
+		params: PacketAdvancements;
+	} | {
+		name: "entity_update_attributes";
+		params: PacketEntityUpdateAttributes;
+	} | {
+		name: "entity_effect";
+		params: PacketEntityEffect;
+	} | {
+		name: "declare_recipes";
+		params: PacketDeclareRecipes;
+	} | {
+		name: "tags";
+		params: PacketTags;
+	} | {
+		name: "set_projectile_power";
+		params: PacketSetProjectilePower;
+	} | {
+		name: "custom_report_details";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonCustomReportDetails;
+	} | {
+		name: "server_links";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonServerLinks;
+	});
 }
 
-export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
+export namespace MCProtocol.PC_1_21_5.Play.Serverbound {
 	export type PacketTeleportConfirm = {
 		teleportId: number;
 	};
 	export type PacketQueryBlockNbt = {
 		transactionId: number;
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 	};
 	export type PacketSelectBundleItem = {
 		slotId: number;
@@ -1835,12 +2791,10 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 		command: string;
 		timestamp: number;
 		salt: number;
-		argumentSignatures: (
-			{
-				argumentName: string;
-				signature: Buffer;
-			}
-		)[];
+		argumentSignatures: {
+			argumentName: string;
+			signature: Buffer;
+		}[];
 		messageCount: number;
 		acknowledged: Buffer;
 		checksum: number;
@@ -1849,16 +2803,16 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 		message: string;
 		timestamp: number;
 		salt: number;
-		signature: Buffer | null | undefined;
+		signature?: Buffer;
 		offset: number;
 		acknowledged: Buffer;
 		checksum: number;
 	};
 	export type PacketChatSessionUpdate = {
-		sessionUUID: MCProtocol.Pc_1_21_5.Types.UUID;
+		sessionUUID: MCProtocol.PC_1_21_5.Types.UUID;
 		expireTime: number;
-		publicKey: MCProtocol.Pc_1_21_5.Types.ByteArray;
-		signature: MCProtocol.Pc_1_21_5.Types.ByteArray;
+		publicKey: MCProtocol.PC_1_21_5.Types.ByteArray;
+		signature: MCProtocol.PC_1_21_5.Types.ByteArray;
 	};
 	export type PacketChunkBatchReceived = {
 		chunksPerTick: number;
@@ -1866,55 +2820,47 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 	export type PacketClientCommand = {
 		actionId: number;
 	};
-	export type PacketTickEnd = {
-		
-	};
+	export type PacketTickEnd = void;
 	export type PacketTabComplete = {
 		transactionId: number;
 		text: string;
 	};
-	export type PacketConfigurationAcknowledged = {
-		
-	};
+	export type PacketConfigurationAcknowledged = void;
 	export type PacketEnchantItem = {
-		windowId: MCProtocol.Pc_1_21_5.Types.ContainerID;
+		windowId: MCProtocol.PC_1_21_5.Types.ContainerID;
 		enchantment: number;
 	};
 	export type PacketWindowClick = {
-		windowId: MCProtocol.Pc_1_21_5.Types.ContainerID;
+		windowId: MCProtocol.PC_1_21_5.Types.ContainerID;
 		stateId: number;
 		slot: number;
 		mouseButton: number;
 		mode: number;
-		changedSlots: (
-			{
-				location: number;
-				item: MCProtocol.Pc_1_21_5.Types.HashedSlot | null | undefined;
-			}
-		)[];
-		cursorItem: MCProtocol.Pc_1_21_5.Types.HashedSlot | null | undefined;
+		changedSlots: {
+			location: number;
+			item?: MCProtocol.PC_1_21_5.Types.HashedSlot;
+		}[];
+		cursorItem?: MCProtocol.PC_1_21_5.Types.HashedSlot;
 	};
 	export type PacketCloseWindow = {
-		windowId: MCProtocol.Pc_1_21_5.Types.ContainerID;
+		windowId: MCProtocol.PC_1_21_5.Types.ContainerID;
 	};
 	export type PacketSetSlotState = {
 		slot_id: number;
-		window_id: MCProtocol.Pc_1_21_5.Types.ContainerID;
+		window_id: MCProtocol.PC_1_21_5.Types.ContainerID;
 		state: boolean;
 	};
 	export type PacketCustomPayload = {
 		channel: string;
-		data: MCProtocol.Pc_1_21_5.Types.RestBuffer;
+		data: Buffer;
 	};
 	export type PacketDebugSampleSubscription = {
 		type: number;
 	};
 	export type PacketEditBook = {
 		hand: number;
-		pages: (
-			string
-		)[];
-		title: string | null | undefined;
+		pages: string[];
+		title?: string;
 	};
 	export type PacketQueryEntityNbt = {
 		transactionId: number;
@@ -1922,15 +2868,25 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 	};
 	export type PacketUseEntity = {
 		target: number;
-		mouse: number;
-		x: (number) | (undefined | null);
-		y: (number) | (undefined | null);
-		z: (number) | (undefined | null);
-		hand: (number) | (number) | (undefined | null);
 		sneaking: boolean;
-	};
+	} & ({
+		mouse: 2;
+		x: number;
+	} | {
+		mouse: 2;
+		y: number;
+	} | {
+		mouse: 2;
+		z: number;
+	} | {
+		mouse: 0;
+		hand: number;
+	} | {
+		mouse: 2;
+		hand: number;
+	});
 	export type PacketGenerateStructure = {
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		levels: number;
 		keepJigsaws: boolean;
 	};
@@ -1979,7 +2935,7 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 		rightPaddle: boolean;
 	};
 	export type PacketPickItemFromBlock = {
-		position: MCProtocol.Pc_1_21_5.Types.Position;
+		position: MCProtocol.PC_1_21_5.Types.Position;
 		includeData: boolean;
 	};
 	export type PacketPickItemFromEntity = {
@@ -1990,7 +2946,7 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 		id: number;
 	};
 	export type PacketCraftRecipeRequest = {
-		windowId: MCProtocol.Pc_1_21_5.Types.ContainerID;
+		windowId: MCProtocol.PC_1_21_5.Types.ContainerID;
 		recipeId: number;
 		makeAll: boolean;
 	};
@@ -1999,7 +2955,7 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 	};
 	export type PacketBlockDig = {
 		status: number;
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		face: number;
 		sequence: number;
 	};
@@ -2019,9 +2975,7 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 			sprint?: boolean;
 		};
 	};
-	export type PacketPlayerLoaded = {
-		
-	};
+	export type PacketPlayerLoaded = void;
 	export type PacketPong = {
 		id: number;
 	};
@@ -2037,25 +2991,28 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 		name: string;
 	};
 	export type PacketResourcePackReceive = {
-		uuid: MCProtocol.Pc_1_21_5.Types.UUID;
+		uuid: MCProtocol.PC_1_21_5.Types.UUID;
 		result: number;
 	};
-	export type PacketAdvancementTab = {
-		action: number;
-		tabId: (string) | (undefined | null);
-	};
+	export type PacketAdvancementTab = ({
+		action: 0;
+		tabId: string;
+	} | {
+		action: 1;
+		tabId: undefined;
+	});
 	export type PacketSelectTrade = {
 		slot: number;
 	};
 	export type PacketSetBeaconEffect = {
-		primary_effect: number | null | undefined;
-		secondary_effect: number | null | undefined;
+		primary_effect?: number;
+		secondary_effect?: number;
 	};
 	export type PacketHeldItemSlot = {
 		slotId: number;
 	};
 	export type PacketUpdateCommandBlock = {
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		command: string;
 		mode: number;
 		flags: number;
@@ -2067,10 +3024,10 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 	};
 	export type PacketSetCreativeSlot = {
 		slot: number;
-		item: MCProtocol.Pc_1_21_5.Types.UntrustedSlot;
+		item: MCProtocol.PC_1_21_5.Types.UntrustedSlot;
 	};
 	export type PacketUpdateJigsawBlock = {
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		name: string;
 		target: string;
 		pool: string;
@@ -2080,7 +3037,7 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 		placement_priority: number;
 	};
 	export type PacketUpdateStructureBlock = {
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		action: number;
 		mode: number;
 		name: string;
@@ -2098,12 +3055,12 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 		flags: "ignore_entities" | "show_air" | "show_bounding_box" | "strict";
 	};
 	export type PacketSetTestBlock = {
-		position: MCProtocol.Pc_1_21_5.Types.Position;
+		position: MCProtocol.PC_1_21_5.Types.Position;
 		mode: number;
 		message: string;
 	};
 	export type PacketUpdateSign = {
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		isFrontText: boolean;
 		text1: string;
 		text2: string;
@@ -2114,23 +3071,23 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 		hand: number;
 	};
 	export type PacketSpectate = {
-		target: MCProtocol.Pc_1_21_5.Types.UUID;
+		target: MCProtocol.PC_1_21_5.Types.UUID;
 	};
 	export type PacketTestInstanceBlockAction = {
-		pos: MCProtocol.Pc_1_21_5.Types.Position;
+		pos: MCProtocol.PC_1_21_5.Types.Position;
 		action: number;
 		data: {
-			test: string | null | undefined;
-			size: MCProtocol.Pc_1_21_5.Types.Vec3i;
+			test?: string;
+			size: MCProtocol.PC_1_21_5.Types.Vec3i;
 			rotation: number;
 			ignoreEntities: boolean;
 			status: number;
-			errorMessage: MCProtocol.Pc_1_21_5.Types.AnonymousNbt | null | undefined;
+			errorMessage?: NBT.Root;
 		};
 	};
 	export type PacketBlockPlace = {
 		hand: number;
-		location: MCProtocol.Pc_1_21_5.Types.Position;
+		location: MCProtocol.PC_1_21_5.Types.Position;
 		direction: number;
 		cursorX: number;
 		cursorY: number;
@@ -2142,10 +3099,196 @@ export namespace MCProtocol.Pc_1_21_5.Play.Serverbound {
 	export type PacketUseItem = {
 		hand: number;
 		sequence: number;
-		rotation: MCProtocol.Pc_1_21_5.Types.Vec2f;
+		rotation: MCProtocol.PC_1_21_5.Types.Vec2f;
 	};
-	export type Packet = {
-		name: "teleport_confirm" | "query_block_nbt" | "select_bundle_item" | "set_difficulty" | "message_acknowledgement" | "chat_command" | "chat_command_signed" | "chat_message" | "chat_session_update" | "chunk_batch_received" | "client_command" | "tick_end" | "settings" | "tab_complete" | "configuration_acknowledged" | "enchant_item" | "window_click" | "close_window" | "set_slot_state" | "cookie_response" | "custom_payload" | "debug_sample_subscription" | "edit_book" | "query_entity_nbt" | "use_entity" | "generate_structure" | "keep_alive" | "lock_difficulty" | "position" | "position_look" | "look" | "flying" | "vehicle_move" | "steer_boat" | "pick_item_from_block" | "pick_item_from_entity" | "ping_request" | "craft_recipe_request" | "abilities" | "block_dig" | "entity_action" | "player_input" | "player_loaded" | "pong" | "recipe_book" | "displayed_recipe" | "name_item" | "resource_pack_receive" | "advancement_tab" | "select_trade" | "set_beacon_effect" | "held_item_slot" | "update_command_block" | "update_command_block_minecart" | "set_creative_slot" | "update_jigsaw_block" | "update_structure_block" | "set_test_block" | "update_sign" | "arm_animation" | "test_instance_block_action" | "spectate" | "block_place" | "use_item";
-		params: (PacketTeleportConfirm) | (PacketQueryBlockNbt) | (PacketSelectBundleItem) | (PacketSetDifficulty) | (PacketMessageAcknowledgement) | (PacketChatCommand) | (PacketChatCommandSigned) | (PacketChatMessage) | (PacketChatSessionUpdate) | (PacketChunkBatchReceived) | (PacketClientCommand) | (PacketTickEnd) | (MCProtocol.Pc_1_21_5.Types.PacketCommonSettings) | (PacketTabComplete) | (PacketConfigurationAcknowledged) | (PacketEnchantItem) | (PacketWindowClick) | (PacketCloseWindow) | (PacketSetSlotState) | (MCProtocol.Pc_1_21_5.Types.PacketCommonCookieResponse) | (PacketCustomPayload) | (PacketEditBook) | (PacketQueryEntityNbt) | (PacketUseEntity) | (PacketGenerateStructure) | (PacketKeepAlive) | (PacketLockDifficulty) | (PacketPosition) | (PacketPositionLook) | (PacketLook) | (PacketFlying) | (PacketVehicleMove) | (PacketSteerBoat) | (PacketPickItemFromBlock) | (PacketPickItemFromEntity) | (PacketPingRequest) | (PacketCraftRecipeRequest) | (PacketAbilities) | (PacketBlockDig) | (PacketEntityAction) | (PacketPlayerInput) | (PacketPlayerLoaded) | (PacketPong) | (PacketRecipeBook) | (PacketDisplayedRecipe) | (PacketNameItem) | (PacketResourcePackReceive) | (PacketAdvancementTab) | (PacketSelectTrade) | (PacketSetBeaconEffect) | (PacketHeldItemSlot) | (PacketUpdateCommandBlock) | (PacketUpdateCommandBlockMinecart) | (PacketSetCreativeSlot) | (PacketUpdateJigsawBlock) | (PacketUpdateStructureBlock) | (PacketSetTestBlock) | (PacketUpdateSign) | (PacketArmAnimation) | (PacketTestInstanceBlockAction) | (PacketSpectate) | (PacketBlockPlace) | (PacketUseItem);
-	};
+	export type Packet = ({
+		name: "teleport_confirm";
+		params: PacketTeleportConfirm;
+	} | {
+		name: "query_block_nbt";
+		params: PacketQueryBlockNbt;
+	} | {
+		name: "select_bundle_item";
+		params: PacketSelectBundleItem;
+	} | {
+		name: "set_difficulty";
+		params: PacketSetDifficulty;
+	} | {
+		name: "message_acknowledgement";
+		params: PacketMessageAcknowledgement;
+	} | {
+		name: "chat_command";
+		params: PacketChatCommand;
+	} | {
+		name: "chat_command_signed";
+		params: PacketChatCommandSigned;
+	} | {
+		name: "chat_message";
+		params: PacketChatMessage;
+	} | {
+		name: "chat_session_update";
+		params: PacketChatSessionUpdate;
+	} | {
+		name: "chunk_batch_received";
+		params: PacketChunkBatchReceived;
+	} | {
+		name: "client_command";
+		params: PacketClientCommand;
+	} | {
+		name: "tick_end";
+		params: PacketTickEnd;
+	} | {
+		name: "settings";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonSettings;
+	} | {
+		name: "tab_complete";
+		params: PacketTabComplete;
+	} | {
+		name: "configuration_acknowledged";
+		params: PacketConfigurationAcknowledged;
+	} | {
+		name: "enchant_item";
+		params: PacketEnchantItem;
+	} | {
+		name: "window_click";
+		params: PacketWindowClick;
+	} | {
+		name: "close_window";
+		params: PacketCloseWindow;
+	} | {
+		name: "set_slot_state";
+		params: PacketSetSlotState;
+	} | {
+		name: "cookie_response";
+		params: MCProtocol.PC_1_21_5.Types.PacketCommonCookieResponse;
+	} | {
+		name: "custom_payload";
+		params: PacketCustomPayload;
+	} | {
+		name: "edit_book";
+		params: PacketEditBook;
+	} | {
+		name: "query_entity_nbt";
+		params: PacketQueryEntityNbt;
+	} | {
+		name: "use_entity";
+		params: PacketUseEntity;
+	} | {
+		name: "generate_structure";
+		params: PacketGenerateStructure;
+	} | {
+		name: "keep_alive";
+		params: PacketKeepAlive;
+	} | {
+		name: "lock_difficulty";
+		params: PacketLockDifficulty;
+	} | {
+		name: "position";
+		params: PacketPosition;
+	} | {
+		name: "position_look";
+		params: PacketPositionLook;
+	} | {
+		name: "look";
+		params: PacketLook;
+	} | {
+		name: "flying";
+		params: PacketFlying;
+	} | {
+		name: "vehicle_move";
+		params: PacketVehicleMove;
+	} | {
+		name: "steer_boat";
+		params: PacketSteerBoat;
+	} | {
+		name: "pick_item_from_block";
+		params: PacketPickItemFromBlock;
+	} | {
+		name: "pick_item_from_entity";
+		params: PacketPickItemFromEntity;
+	} | {
+		name: "ping_request";
+		params: PacketPingRequest;
+	} | {
+		name: "craft_recipe_request";
+		params: PacketCraftRecipeRequest;
+	} | {
+		name: "abilities";
+		params: PacketAbilities;
+	} | {
+		name: "block_dig";
+		params: PacketBlockDig;
+	} | {
+		name: "entity_action";
+		params: PacketEntityAction;
+	} | {
+		name: "player_input";
+		params: PacketPlayerInput;
+	} | {
+		name: "player_loaded";
+		params: PacketPlayerLoaded;
+	} | {
+		name: "pong";
+		params: PacketPong;
+	} | {
+		name: "recipe_book";
+		params: PacketRecipeBook;
+	} | {
+		name: "displayed_recipe";
+		params: PacketDisplayedRecipe;
+	} | {
+		name: "name_item";
+		params: PacketNameItem;
+	} | {
+		name: "resource_pack_receive";
+		params: PacketResourcePackReceive;
+	} | {
+		name: "advancement_tab";
+		params: PacketAdvancementTab;
+	} | {
+		name: "select_trade";
+		params: PacketSelectTrade;
+	} | {
+		name: "set_beacon_effect";
+		params: PacketSetBeaconEffect;
+	} | {
+		name: "held_item_slot";
+		params: PacketHeldItemSlot;
+	} | {
+		name: "update_command_block";
+		params: PacketUpdateCommandBlock;
+	} | {
+		name: "update_command_block_minecart";
+		params: PacketUpdateCommandBlockMinecart;
+	} | {
+		name: "set_creative_slot";
+		params: PacketSetCreativeSlot;
+	} | {
+		name: "update_jigsaw_block";
+		params: PacketUpdateJigsawBlock;
+	} | {
+		name: "update_structure_block";
+		params: PacketUpdateStructureBlock;
+	} | {
+		name: "set_test_block";
+		params: PacketSetTestBlock;
+	} | {
+		name: "update_sign";
+		params: PacketUpdateSign;
+	} | {
+		name: "arm_animation";
+		params: PacketArmAnimation;
+	} | {
+		name: "test_instance_block_action";
+		params: PacketTestInstanceBlockAction;
+	} | {
+		name: "spectate";
+		params: PacketSpectate;
+	} | {
+		name: "block_place";
+		params: PacketBlockPlace;
+	} | {
+		name: "use_item";
+		params: PacketUseItem;
+	});
 }

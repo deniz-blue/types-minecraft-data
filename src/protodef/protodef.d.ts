@@ -55,4 +55,12 @@ export namespace ProtoDefinition {
         | ["mapper", MapperArgs]
         | ["bitflags", BitflagsArgs]
         ;
+
+    export type RegistryEntryHolderArgs = { baseName: string; otherwise: { name: string; type: Type } };
+    export type RegistryEntryHolderSetArgs = { base: { name: string; type: Type }; otherwise: { name: string; type: Type } };
+
+    export type MCType =
+        | ["registryEntryHolder", RegistryEntryHolderArgs]
+        | ["registryEntryHolderSet", RegistryEntryHolderSetArgs]
+        ;
 };
